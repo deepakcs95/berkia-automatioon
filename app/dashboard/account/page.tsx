@@ -65,16 +65,13 @@ export default function AccountPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl   mx-auto ">
-      <div className="mb-8 space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
-          Instagram Accounts
-        </h2>
-        <p className="text-muted-foreground text-lg">
+    <div className="p-6 space-y-8">
+      <div className=" mb-7  ">
+        <h2 className="text-3xl font-bold tracking-tight">Instagram Accounts</h2>
+        <p className="text-muted-foreground">
           Connect and manage your Instagram accounts
         </p>
       </div>
-
       <div className="grid  gap-6 ">
         {/* Add New Account Card */}
         <Card className="border-dashed  hover:border-primary/50 transition-colors">

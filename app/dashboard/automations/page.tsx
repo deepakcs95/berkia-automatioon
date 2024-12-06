@@ -145,7 +145,7 @@ export default function AutomationsPage() {
         trigger: { type: 'comment', keyword: '' },
         action: { type: 'reply', content: '' }
       });
-      toast.success("Automation created successfully");
+      toast.success("Automation created successfully",);
     }
   };
 
@@ -182,15 +182,13 @@ export default function AutomationsPage() {
 
   if (automations.length === 0 && !isCreating) {
     return (
-      <div className="p-6 max-w-7xl mx-auto">
-        <div className="mb-8 space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
-            Automations
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Create and manage your Instagram automations
-          </p>
-        </div>
+      <div className="p-6 space-y-8">
+      <div className=" mb-7  ">
+        <h2 className="text-3xl font-bold tracking-tight">Automations</h2>
+        <p className="text-muted-foreground">
+          Create and manage your Instagram automations
+        </p>
+      </div>
 
         <Card className="border-dashed">
           <CardContent className="pt-10 pb-10 flex flex-col items-center justify-center space-y-4">
@@ -216,12 +214,10 @@ export default function AutomationsPage() {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-8 space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
-          Automations
-        </h2>
-        <p className="text-muted-foreground text-lg">
+    <div className="p-6 space-y-8">
+      <div className=" mb-7  ">
+        <h2 className="text-3xl font-bold tracking-tight">Automations</h2>
+        <p className="text-muted-foreground">
           Create and manage your Instagram automations
         </p>
       </div>
