@@ -1,29 +1,12 @@
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
-export default async function Dashboard() {
-  const projects = new Array(10).fill({
-    name: "Project 1",
-    url: "/",
-    icon: () => <div>Icon</div>,
-  });
+export default function Page() {
   return (
-    <SidebarProvider>
-      <SidebarMenu>
-        {projects.map((project, index) => (
-          <SidebarMenuItem key={index}>
-            <SidebarMenuButton asChild>
-              <a href={project.url}>
-                <project.icon />
-                <span>{project.name}</span>
-              </a>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        ))}
-      </SidebarMenu>
-    </SidebarProvider>
+    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+        <div className="aspect-video rounded-xl bg-muted/50" />
+        <div className="aspect-video rounded-xl bg-muted/50" />
+        <div className="aspect-video rounded-xl bg-muted/50" />
+      </div>
+      <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import Footer from "@/components/global/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, CheckCircle, Clock } from "lucide-react";
+import Link from "next/link";
 
 export default async function Home() {
   return (
@@ -23,9 +24,11 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="space-x-4 md:space-x-8">
-                  <Button size="lg">Get Started</Button>
+                  <Button size="lg">
+                    <Link href="/dashboard">Get Started</Link>
+                  </Button>
                   <Button variant="outline" size="lg">
-                    Learn More
+                    <Link href="/learn-more">Learn More</Link>
                   </Button>
                 </div>
               </div>
