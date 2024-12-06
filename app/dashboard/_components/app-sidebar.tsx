@@ -5,7 +5,9 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  ChartBarIcon,
   Command,
+  DollarSign,
   Frame,
   GalleryVerticalEnd,
   Map,
@@ -43,12 +45,21 @@ const data = {
       title: "Automations",
       url: "/dashboard/automations",
       icon: Bot,
-      items: [],
+    },
+    {
+      title: "ChatBot",
+      url: "/dashboard/chatbot",
+      icon: ChartBarIcon,
     },
     {
       title: "Accounts",
-      url: "/dashboard/accounts",
+      url: "/dashboard/account",
       icon: BookOpen,
+    },
+    {
+      title: "Billing",
+      url: "/dashboard/billing",
+      icon: DollarSign,
     },
     {
       title: "Settings",
