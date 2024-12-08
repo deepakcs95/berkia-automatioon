@@ -1,21 +1,20 @@
  
 import { AddAccount } from "./_components/add-account";
-import { redirect } from "next/navigation";
-import { auth } from "@/lib/auth";
-import { getInstagramAccountsOfUser } from "@/lib/db/instagram";
-import { AccountCard, AddAccountProps } from "./_components/account-card";
+import { AccountCard  } from "./_components/account-card";
+import { getCurrentUserInstagramAccounts } from "@/app/actions/instagram/actions";
 
  
 
-export  default async function AccountPage(){
+export  default async function AccountPage({searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const status = await (await searchParams).status as string;    
+
+ 
+
    
-  const session = await auth();
-
-  if (!session?.user?.id) {
-     redirect('/sign-in');
-  }
-
-  const accounts = await getInstagramAccountsOfUser(session.user.id);
+  const accounts = await getCurrentUserInstagramAccounts();
 
   
 
@@ -28,11 +27,11 @@ export  default async function AccountPage(){
         </p>
       </div>
       <div className="grid  gap-6 ">
-        <AddAccount/>
+        <AddAccount status={status}/>
 
         {/* Connected Accounts */}
         <div className="grid gap-6  md:grid-cols-2 lg:grid-cols-3 ">
-          {accounts.map((account) => (
+          { accounts?.map((account) => (
             <AccountCard key={account.id} account={account} />
           ))}
         </div>

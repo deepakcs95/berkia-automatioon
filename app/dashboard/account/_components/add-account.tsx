@@ -3,10 +3,23 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
+import { toast } from "sonner";
 
-export const instagramAuthUrl = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=9584644174883499&redirect_uri=${process.env.NEXT_PUBLIC_URL}/callback/instagram&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish`;
+export const instagramAuthUrl = `https://www.instagram.com/oauth/authorize?enable_fb_login=0&force_authentication=1&client_id=${process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID!}&redirect_uri=${process.env.NEXT_PUBLIC_URL}/callback/instagram&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish`;
 
-export function AddAccount() {
+interface AddAccountProps {
+  status: string;
+}
+
+export function AddAccount({status}: AddAccountProps) {
+
+  if (status === 'account_connected') {
+    toast.success("Instagram account connected successfully",{id: 'account_connected'});
+  }else if (status === 'account_connection_failed') {
+    toast.error("Instagram account connection failed",{id: 'account_connection_failed'});
+  }
+
+
   const handleAddAccount = async () => {
     
     window.location.href = instagramAuthUrl;

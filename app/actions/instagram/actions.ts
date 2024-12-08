@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from "@/lib/auth";
-import { getInstagramAccountsOfUser, saveInstagramAccount } from "@/lib/db/instagram";
+import { getInstagramAccountsByUserId,  saveInstagramAccount } from "@/lib/db/instagram";
 import { db } from "@/lib/db/prisma";
 import { getInstagramToken, getInstagramUser, getLongLivedToken } from "@/lib/Integration/social-account-auth";
 import { revalidatePath } from "next/cache";
@@ -45,7 +45,7 @@ export async function deleteConnectedInstagramAccount(account_id: string) {
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    const accounts = await getInstagramAccountsOfUser(session.user.id);
+    const accounts = await getInstagramAccountsByUserId(session.user.id);
     const accountToDelete = accounts.find(
       (account) => account.account_id === account_id
     );
@@ -76,7 +76,7 @@ export async function disconnectInstagramAccount(account_id: string) {
   
     try {
       // First, find the specific Instagram account with the given account_id
-      const accounts = await getInstagramAccountsOfUser(session.user.id);
+      const accounts = await getInstagramAccountsByUserId(session.user.id);
       const accountToDisconnect = accounts.find(
         (account) => account.account_id === account_id
       );
@@ -115,3 +115,15 @@ export async function disconnectInstagramAccount(account_id: string) {
         revalidatePath('/dashboard/account');
     }
   }
+
+
+  export async function getCurrentUserInstagramAccounts( ) {
+    const session = await auth();
+
+  if (!session?.user?.id) {
+     redirect('/sign-in');
+  }
+
+  const accounts = await getInstagramAccountsByUserId(session.user.id);
+
+  return accounts;}

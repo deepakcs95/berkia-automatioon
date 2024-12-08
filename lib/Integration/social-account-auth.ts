@@ -3,7 +3,7 @@ import {z} from 'zod'
 const InstagramUserSchema = z.object({
   user_id: z.string(),
   username: z.string(),
-  profile_picture_url: z.string(),
+  profile_picture_url: z.string().optional(),
 })
 
 export type InstagramUser = z.infer<typeof InstagramUserSchema>
@@ -15,7 +15,7 @@ export async function  getInstagramToken(code: string) {
   code = code.split('#')[0];
 
   const formData = getFormData({
-    client_id: process.env.INSTAGRAM_CLIENT_ID!,
+    client_id: process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID!,
     client_secret: process.env.INSTAGRAM_CLIENT_SECRET!,
     grant_type: 'authorization_code',
     redirect_uri: `${process.env.NEXTAUTH_URL}/callback/instagram`,
