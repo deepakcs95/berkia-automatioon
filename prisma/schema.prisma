@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String          @id
+  name            String?
+  email           String?         @unique(map: "user_email_unique")
+  emailVerified   DateTime?       @db.Timestamp(6)
+  image           String?
+  social_accounts SocialAccount[]
+
+  @@map("user")
+}
+
+model SocialAccount {
+  id               String      @id @default(uuid())
+  social_type      social_type
+  username         String
+  profile_picture_url String?
+  status           social_connection_status
+  account_id       String
+  access_token     String?
+  token_expires_at DateTime?   @db.Timestamp(6)
+  created_at       DateTime?   @default(now()) @db.Timestamp(6)
+  updated_at       DateTime?   @default(now()) @db.Timestamp(6)
+  user_id          String
+  user             User?       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "social_accounts_user_id_user_id_fk")
+
+  @@map("social_accounts")
+}
+
+enum social_type {
+  INSTAGRAM
+  TWITTER
+}
+enum social_connection_status {
+  CONNECTED
+  DISCONNECTED
+}

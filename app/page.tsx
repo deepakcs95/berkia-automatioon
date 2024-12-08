@@ -4,8 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, CheckCircle, Clock } from "lucide-react";
 import Link from "next/link";
+import { auth } from "@/lib/auth";
 
 export default async function Home() {
+
+  console.log(await auth());
+  
+
   return (
     <>
       <div className="flex flex-col min-h-screen">
