@@ -1,9 +1,11 @@
 'use server'
 
 import { auth } from "@/lib/auth";
-import { getInstagramAccountsByUserId,  saveInstagramAccount } from "@/lib/db/instagram";
+import { getAllDetailsOfInstagramAccountsByUserId, getInstagramAccountsByUserId,  saveInstagramAccount } from "@/lib/db/instagram";
 import { db } from "@/lib/db/prisma";
-import { getInstagramToken, getInstagramUser, getLongLivedToken } from "@/lib/Integration/social-account-auth";
+import { getInstagramPosts, getInstagramToken, getInstagramUser, getLongLivedToken, validateInstagramToken } from "@/lib/Integration/social-account-auth";
+import { SocialAccount } from "@prisma/client";
+import next from "next";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -127,3 +129,46 @@ export async function disconnectInstagramAccount(account_id: string) {
   const accounts = await getInstagramAccountsByUserId(session.user.id);
 
   return accounts;}
+
+
+  export async function getInstagramPostsByAccountId(instgramAccountId: string, cursor?: string, limit: number = 2) {  
+    const session = await auth();
+
+  if (!session?.user?.id) {
+     redirect('/sign-in');
+  }
+
+  try {
+  const accounts = await getAllDetailsOfInstagramAccountsByUserId(session.user.id);
+  const account = accounts.find((account) => account.account_id === instgramAccountId);
+
+  if (!account) {
+    return { success: false, message: "Instagram account not found" };
+  }
+
+
+    const validatedAccount =await  validateInstagramToken(account as SocialAccount);   
+    
+    if(!validatedAccount) {
+      revalidatePath('/');
+      return { success: false, message: "token is not valid" };
+
+    }
+
+
+    const data = await getInstagramPosts(validatedAccount.access_token || '', cursor, limit);
+
+    if (!data) {
+      return { success: false, message: "Failed to fetch Instagram posts" };
+    }
+
+    
+    return { 
+      success: true, 
+      posts: data.posts,
+      nextCursor: data.after || null
+    };
+  } catch (error) {
+    return { success: false, message: "Failed to fetch Instagram posts" };
+  }
+}

@@ -1,6 +1,7 @@
 import { cache } from 'react';
 import { InstagramUser } from '../Integration/social-account-auth';
 import { db } from '@/lib/db/prisma'; 
+import { social_connection_status } from '@prisma/client';
 
 
 export async function saveInstagramAccount(userId: string,InstagramUser : InstagramUser,accesToken: string) {
@@ -66,6 +67,26 @@ export const getInstagramAccountsByUserId   = cache(async (userId: string) => {
       user_id: true,
       access_token: false,
       token_expires_at: false,
+    },
+  });
+  return account;
+});
+export const getAllDetailsOfInstagramAccountsByUserId   = cache(async (userId: string) => {
+  const account = await db.socialAccount.findMany({
+    where: { user_id: userId },
+     
+  });
+  return account;
+});
+
+
+export const updateRefreshToken = cache(async (id: string, access_token: string, token_expires_at: Date,status:social_connection_status ) => {
+  const account = await db.socialAccount.update({
+    where: { id },
+    data: {
+      access_token,
+      token_expires_at,
+      status
     },
   });
   return account;

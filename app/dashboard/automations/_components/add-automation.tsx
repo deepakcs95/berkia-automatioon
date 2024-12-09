@@ -9,6 +9,9 @@ import Image from 'next/image'
 import { InstaAccountProps } from '../../account/_components/account-card'
 import { NewAutomation } from './automation-card'
 import { z } from 'zod'
+import { getInstagramPostsByAccountId } from '@/app/actions/instagram/actions'
+import { useQuery } from '@tanstack/react-query'
+import { PostSelector } from './post-selector'
 
 
 
@@ -31,6 +34,12 @@ const automationSchema = z.object({
 
 
 export default function AddAutomation({initialAccounts}: {initialAccounts:InstaAccountProps[]}) { 
+
+
+    
+
+
+
   const [selectedAccount, setSelectedAccount] = useState(initialAccounts[0].account_id);
   const [newAutomation, setNewAutomation] = useState<NewAutomation>({
     accountId: '',
@@ -39,8 +48,18 @@ export default function AddAutomation({initialAccounts}: {initialAccounts:InstaA
     
   });
 
+
+
+  const handleSaveNewAutomation = (formData:FormData) => {
+    console.log("Saving new automation...");
+    
+    console.log(formData);
+    
+  };
+
   return (
     <>
+    <form >
     <Card className="mb-8 border-primary/50">
           <CardHeader>
             <CardTitle className="text-xl">New Automation</CardTitle>
@@ -74,7 +93,7 @@ export default function AddAutomation({initialAccounts}: {initialAccounts:InstaA
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-col md:flex-row justify-center gap-4 items-center">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr,auto,1fr] gap-4 items-center">
               <Card className='flex-1'>
                 <CardHeader>
                   <CardTitle className="text-base">Trigger</CardTitle>
@@ -122,7 +141,7 @@ export default function AddAutomation({initialAccounts}: {initialAccounts:InstaA
                 <ArrowDown className="h-6 w-6 text-muted-foreground block md:hidden" />
               </div>
 
-              <Card className='flex-1'>
+              <Card  >
                 <CardHeader>
                   <CardTitle className="text-base">Action</CardTitle>
                   <CardDescription>Do this...</CardDescription>
@@ -169,7 +188,7 @@ export default function AddAutomation({initialAccounts}: {initialAccounts:InstaA
                 <ArrowDown className="h-6 w-6 text-muted-foreground block md:hidden" />
               </div>
 
-              <Card className='flex-1'>
+              <Card className='md:h-full'>
                 <CardHeader>
                   <CardTitle className="text-base">Apply</CardTitle>
                   <CardDescription>Apply this to...</CardDescription>
@@ -177,36 +196,8 @@ export default function AddAutomation({initialAccounts}: {initialAccounts:InstaA
                 <CardContent className="space-y-4">
                   <div>
                     <label className="text-sm font-medium mb-1 block">Posts</label>
-                    <Select
-                      value={newAutomation.action.type}
-                      onValueChange={(value: 'reply' | 'message') => {
-                        setNewAutomation(prev => ({
-                          ...prev,
-                          action: { ...prev.action, type: value }
-                        }));
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Posts">Posts</SelectItem>
-                        <SelectItem value="message">Send Message</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium mb-1 block">Message</label>
-                    <Input
-                      value={newAutomation.action.content}
-                      onChange={(e) => {
-                        setNewAutomation(prev => ({
-                          ...prev,
-                          action: { ...prev.action, content: e.target.value }
-                        }));
-                      }}
-                      placeholder="Enter response message"
-                    />
+                     
+                    <PostSelector initialAccounts={initialAccounts} />
                   </div>
                 </CardContent>
               </Card></>
@@ -227,12 +218,14 @@ export default function AddAutomation({initialAccounts}: {initialAccounts:InstaA
               Cancel
             </Button>
             <Button 
+            formAction={handleSaveNewAutomation}
               disabled={!newAutomation.trigger.keyword || !newAutomation.action.content}
             >
               Save Automation
             </Button>
           </CardFooter>
         </Card>
+        </form>
        </>
   )
 }

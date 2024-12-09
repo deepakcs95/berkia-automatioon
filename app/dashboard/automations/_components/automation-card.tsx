@@ -1,22 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import {  useState } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
+ 
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+ 
 import { Input } from "@/components/ui/input";
 import {
   PlusCircle,
@@ -25,20 +16,16 @@ import {
   ArrowRight,
   Trash2,
   Settings2,
-  AlertCircle,
   Pencil,
   X,
   Check,
   Instagram,
-  ArrowDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { set } from "react-hook-form";
 import { InstaAccountProps } from "../../account/_components/account-card";
-import Image from "next/image";
 import AddAutomation from "./add-automation";
-
+ 
 export interface Automation {
   id: string;
   accountId: string;
@@ -73,6 +60,10 @@ export interface AutomationsCardProps {
 
 export default function AutomationsCard({initialAccounts, initialAutomations}: AutomationsCardProps) {
   
+    
+ 
+ 
+
 
   const [selectedAccount, setSelectedAccount] = useState<string>(initialAccounts[0]?.account_id || '');
   const [automations, setAutomations] = useState<Automation[]>(initialAutomations);

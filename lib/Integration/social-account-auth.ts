@@ -1,4 +1,8 @@
+import { SocialAccount } from '@prisma/client';
 import {z} from 'zod'
+import { updateRefreshToken } from '../db/instagram';
+import { log } from 'console';
+import { PostItem, PostItemResponse } from '../types';
 
 const InstagramUserSchema = z.object({
   user_id: z.string(),
@@ -75,6 +79,7 @@ export async function  refreshToken(refreshToken: string) {
     
     if (!tokenData?.access_token) {
       throw new Error('Invalid refresh token response');
+      
     }
     console.log('📝 Received refresh token response');
     return tokenData;
@@ -88,7 +93,6 @@ export async function getInstagramUser(accessToken: string) {
     );
 
     const userData = await userResponse.json();
-
 
  
     // Validate the response
@@ -106,6 +110,65 @@ export async function getInstagramUser(accessToken: string) {
 
 
 
+export async function validateInstagramToken(account:SocialAccount): Promise<SocialAccount | null> {
+
+const {access_token, token_expires_at} = account
+
+  if (!access_token || !token_expires_at) {
+    console.log('❌ Instagram token/token_expires_at is missing');
+    return  null;
+  }
+
+  if(isTokenExpiringSoon(token_expires_at))  {
+    try {
+     const refreshedToken = await refreshToken(access_token)
+     
+  // "access_token":"{long-lived-user-access-token}",
+  // "token_type": "bearer",
+  // "expires_in": 5183944  // Number of seconds until token expires
+ 
+      if(refreshedToken.access_token) {
+        account.access_token = refreshedToken.access_token
+        account.token_expires_at =  new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
+        account.status =  'CONNECTED'
+        await updateRefreshToken(account.id, refreshedToken.access_token, account.token_expires_at ,account.status)
+        log('✅ Instagram token refreshed successfully')
+        return account
+      }
+    }catch (error) {
+      console.log(' ❌ Error refreshing Instagram token:', error);
+      await updateRefreshToken(account.id, "", new Date(Date.now()) ,'DISCONNECTED')
+      return null
+    }
+
+    }
+
+    console.log('✅Instagram token is already valid');
+ return account;
+}
+
+export async function getInstagramPosts(access_token: string, cursor?: string, limit: number = 2) {
+  
+  const posts = await fetch(
+    `https://graph.instagram.com/me/media?fields=id,media_url,media_type,thumbnail_url&access_token=${access_token}&limit=${limit}${cursor ? `&after=${cursor}` : ''}`
+  );
+  const postsData = await posts.json();
+
+  if (!Array.isArray(postsData?.data)) {
+    throw new Error('Invalid Instagram posts response');
+  }
+
+  console.log(`📝 Received Instagram posts response for cursor ${cursor} and limit ${limit} with posts ${postsData?.data?.length} and has next ${postsData?.paging?.next ? 'yes' : 'no'}`);
+  
+  return {
+    posts: postsData.data,
+    after:postsData?.paging?.next && postsData?.paging?.cursors?.after
+  } as PostItemResponse;
+}
+
+
+
+
 function getFormData(params: Record<string, string>) {
   const formData = new FormData();
   for (const key in params) {
@@ -114,7 +177,7 @@ function getFormData(params: Record<string, string>) {
   return formData;
 }
 
-export function isTokenExpiringSoon(expiresAt?: Date | null): boolean {
+export function isTokenExpiringSoon(expiresAt: Date | null): boolean {
   if (!expiresAt) return true;
   
   const now = new Date();
