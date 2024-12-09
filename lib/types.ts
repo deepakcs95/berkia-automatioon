@@ -10,3 +10,24 @@ export type PostItem = {
     posts:PostItem[],
     after?:string
   }
+
+  export interface InstagramAutomationState {
+    account: {
+      id: string;
+    } | null;
+    trigger: {
+      type: 'comment' | 'message';
+      keyword: string;
+    } | null;
+    actions: {
+      commentReply?: {
+        type: 'commentReply';
+        content: string;
+      };
+      messageReply?: {
+        type: 'messageReply';
+        content: string;
+      };
+    };
+    selectedPosts?: string[];
+  }

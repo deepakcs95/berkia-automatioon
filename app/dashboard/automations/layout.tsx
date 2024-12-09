@@ -1,8 +1,11 @@
 import { Suspense } from "react";
+import { InstagramAutomationProvider } from "./_components/hooks/useAutomationReducer";
 
  
 export default function  Layout({ children }: { children: React.ReactNode }) {
   return (
+    <InstagramAutomationProvider>
+
     <div className="p-6 space-y-8">
     <div className=" mb-7  ">
       <h2 className="text-3xl font-bold tracking-tight">Automations</h2>
@@ -18,5 +21,6 @@ export default function  Layout({ children }: { children: React.ReactNode }) {
           {children}
         </Suspense>
     </div>
+    </InstagramAutomationProvider>
   );
 }

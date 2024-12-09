@@ -1,13 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import Image from 'next/image'
-import { Check, ChevronsUpDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import {   ChevronsUpDown } from 'lucide-react'
+ 
 import { Button } from '@/components/ui/button'
 import {
   Command,
-  CommandEmpty,
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
@@ -16,16 +14,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { PostItem } from '@/lib/types'
 import { getInstagramPostsByAccountId } from '@/app/actions/instagram/actions'
 import { InstaAccountProps } from '../../account/_components/account-card'
 import { useInfiniteQuery } from '@tanstack/react-query'
+import { PostCard } from './ui/post-card'
+import { usePostSelection } from './hooks/usePostSelection'
 
 export function PostSelector({ initialAccounts }: { initialAccounts: InstaAccountProps[] }) {
   const [open, setOpen] = React.useState(false)
-  const [selectedPosts, setSelectedPosts] = React.useState<PostItem[]>([])
-  const [cursor, setCursor] = React.useState<string >("")
   const containerRef = React.useRef<HTMLDivElement>(null)
+
+  const {handleSelect, isPostSelected, selectedPosts} = usePostSelection()
 
   const {
     data,
@@ -39,21 +38,38 @@ export function PostSelector({ initialAccounts }: { initialAccounts: InstaAccoun
       getInstagramPostsByAccountId(
         initialAccounts[0]?.account_id || '',
         pageParam,
-        10
+        2
       ),
     getNextPageParam: (lastPage) => lastPage?.nextCursor || null  ,
     initialPageParam: "",
   })
 
-  const handleSelect = (post: PostItem) => {
-    setSelectedPosts((current) => {
-      const updated = current.some((p) => p.id === post.id)
-        ? current.filter((p) => p.id !== post.id)
-        : [...current, post]
-      return updated
-    })
+   
+
+  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    console.log('Scroll event detected', {
+      scrollTop: target.scrollTop,
+      scrollHeight: target.scrollHeight,
+      clientHeight: target.clientHeight
+    });
+    
+    if (
+      target.scrollTop + target.clientHeight >= 
+      target.scrollHeight - 20
+    ) {
+      console.log('Near bottom, fetching next page...');
+      !isFetchingNextPage && hasNextPage && fetchNextPage();
+    }
+ 
   }
 
+  const memoPosts = React.useMemo(() => {
+    if (!data?.pages) return []
+    return data?.pages
+      .filter(page => page.success)
+      .flatMap(page => page.posts)
+  }, [data])
  
   // If no accounts are available, show a message
   if (!initialAccounts?.length) {
@@ -69,7 +85,7 @@ export function PostSelector({ initialAccounts }: { initialAccounts: InstaAccoun
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {selectedPosts.length > 0
+          {selectedPosts && selectedPosts?.length > 0
             ? `${selectedPosts.length} post${selectedPosts.length > 1 ? 's' : ''} selected`
             : "Select posts..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -80,73 +96,23 @@ export function PostSelector({ initialAccounts }: { initialAccounts: InstaAccoun
           <CommandList 
             ref={containerRef}
             className="h-[200px] overflow-y-auto scroll-smooth"
-            onScroll={(e) => {
-              const target = e.currentTarget;
-              console.log('Scroll event detected', {
-                scrollTop: target.scrollTop,
-                scrollHeight: target.scrollHeight,
-                clientHeight: target.clientHeight
-              });
-              
-              if (
-                target.scrollTop + target.clientHeight >= 
-                target.scrollHeight - 20
-              ) {
-                console.log('Near bottom, fetching next page...');
-                !isFetchingNextPage && hasNextPage && fetchNextPage();
-              }
-            }}
+            onScroll={ e=>onScroll(e)}
           >
             <div className="p-2">
               {isPending ? (
                 <CommandItem disabled className="flex items-center justify-center py-4">
                   Loading posts...
                 </CommandItem>
-              ) : data?.pages?.length  ? (
+              ) : memoPosts?.length  ? (
                 <div className="grid grid-cols-2 gap-2">
-                  {data?.pages
-                    .filter(page => page.success)
-                    .flatMap(page => page.posts)
+                  {memoPosts
                     .map((post) => {
                       if (!post) return null;
                       return (
-                        <div
-                          key={post.id}
-                          className="relative group cursor-pointer"
-                          onClick={() => handleSelect(post)}
-                        >
-                          <div className="relative aspect-square overflow-hidden rounded-lg">
-                            <Image
-                              src={post.media_type === 'VIDEO' ? post.thumbnail_url! : post.media_url}
-                              alt={`Post ${post.id}`}
-                              fill
-                              sizes="150px"
-                              className="object-cover transition-transform group-hover:scale-105"
-                            />
-                            <div className={cn(
-                              "absolute inset-0 bg-black/20 transition-opacity",
-                              selectedPosts.some((p) => p.id === post.id) ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                            )}>
-                              <div className="absolute top-2 right-2">
-                                <div className={cn(
-                                  "h-5 w-5 rounded-md border-2 border-white flex items-center justify-center",
-                                  selectedPosts.some((p) => p.id === post.id) ? "bg-white" : "bg-transparent"
-                                )}>
-                                  <Check
-                                    className={cn(
-                                      "h-4 w-4",
-                                      selectedPosts.some((p) => p.id === post.id) 
-                                        ? "text-black" 
-                                        : "text-white opacity-0 group-hover:opacity-100"
-                                    )}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}  
+                        <PostCard key={post.id} isSelected={isPostSelected(post.id)} post={post} onSelect={handleSelect} />
+                      )
+                    })
+                  }
                 </div>
               ) : (
                 <CommandItem disabled className="flex items-center justify-center py-4">
