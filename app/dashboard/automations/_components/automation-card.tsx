@@ -28,57 +28,56 @@ import AddAutomation from "./add-automation";
 import NoAutomationsCard from "./ui/no-automations-card";
 import { useInstagramAutomation } from "./hooks/useAutomationReducer";
 import { PostSelector } from "./post-selector";
-import { Dialog, DialogContent } from "@radix-ui/react-dialog";
- 
- 
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AutomationForm } from "./automation-form";
+import { useAutomationForm } from "./hooks/useAutomationForm";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTrigger ,AlertDialogFooter, AlertDialogTitle, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
+import { AutomationItem } from "./ui/automation-item";
 
 export interface AutomationsCardProps {
   initialAccounts: InstaAccountProps[]
 }
 
-
 export default function AutomationsCard({initialAccounts}: AutomationsCardProps) {
   
-    
-  
- 
   const {state}= useInstagramAutomation();
 
   const [selectedAccount, setSelectedAccount] = useState<string>(initialAccounts[0]?.account_id || '');
-  const [isCreating, setIsCreating] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null); // setEditingId
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState (false); // setEditingId
   const [isEditing, setIsEditing] = useState(false);
-  // Mock accounts data - replace with your actual accounts data
- 
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [ishovered,setIsHovered]=useState(false);
+
   const handleAddAutomation = () => {
-    setIsCreating(true);
+    setOpenDialog(true);
   };
 
-  const handleSaveNewAutomation = () => {
-    
-  };
+  const {   dispatch } = useInstagramAutomation();
 
   const handleEditAutomation = (id: string) => {
-    setEditingId(id);
+    setOpenDialog(true);
+    setIsEditing(false);
   };
 
   const handleSaveEdit = () => {
+    setOpenDialog(false);
     setIsEditing(false)
     toast.success("Automation updated successfully");
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    setEditingId(null);
   };
 
-  const handleDeleteAutomation = (id: string) => {
+  const handleDeleteAutomation = ( ) => {
+    dispatch({ type: "RESET" });
     toast.success("Automation deleted successfully");
   };
 
-  // Group automations by account
-   
-  if (!state.account?.id  && !isCreating) {
+  if (!state.account?.id  && !openDialog) {
     return (
       <NoAutomationsCard handleAddAutomation={handleAddAutomation} />
     );
@@ -91,7 +90,7 @@ export default function AutomationsCard({initialAccounts}: AutomationsCardProps)
           <CardContent className="pt-6">
             <Button
               onClick={handleAddAutomation}
-              disabled={isCreating}
+              disabled={openDialog}
               className="w-full"
             >
               <PlusCircle className="h-4 w-4 mr-2" />
@@ -101,15 +100,14 @@ export default function AutomationsCard({initialAccounts}: AutomationsCardProps)
         </Card>
       </div>
 
-      {isCreating && (
-        <AddAutomation setIsCreating={setIsCreating} initialAccounts={initialAccounts} />
-      )}
+      
       <div className="space-y-8">
         {initialAccounts.map((account) => {
           const accountAutomations = state.account?.id === account.id && state 
 
           return (
             <div key={account.id} className="space-y-4">
+              
               <div className="flex items-center space-x-4 mb-4">
                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
                   <div className="h-full w-full rounded-full bg-white flex items-center justify-center">
@@ -120,152 +118,41 @@ export default function AutomationsCard({initialAccounts}: AutomationsCardProps)
                   <h3 className="text-lg font-semibold">@{account.username}</h3>
                   <p className={cn(
                     "text-sm",
-                    account.status === 'connected' ? "text-green-500" : "text-red-500"
+                    account.status === 'CONNECTED' ? "text-green-500" : "text-red-500"
                   )}>
-                    {account.status === 'connected' ? '● Connected' : '○ Disconnected'}
+                    {account.status === 'CONNECTED' ? '● Connected' : '○ Disconnected'}
                   </p>
                 </div>
               </div>
 
               <div className="grid gap-4 pl-4 border-l-2 border-primary/20">
-                 
-                  <Card key={state.account?.id} className="group">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-8">
-                          <div className="flex items-center space-x-2">
-                            <MessageSquare className="h-5 w-5 text-primary" />
-                            <span className="font-medium">
-                              When: {state.trigger?.type === 'comment' ? 'Comment' : 'Message'}
-                            </span>
-                            <span className="text-muted-foreground">
-                              contains "{state.trigger?.keyword}"
-                            </span>
-                          </div>
-                          <ArrowRight className="h-4 w-4 text-muted-foreground" />
-                          <div className="flex items-center space-x-2">
-                            <MessageCircle className="h-5 w-5 text-primary" />
-                           {state.actions.commentReply?.type && <>
-                           <span className="font-medium">
-                              Then:  Reply 
-                            </span>
-                            <span className="text-muted-foreground">
-                              with "{state.actions.commentReply?.content}"
-                            </span>
-                           </>
-                            }
-                           {state.actions.messageReply?.type && <>
-                           <span className="font-medium">
-                              Then:  Send Message
-                            </span>
-                            <span className="text-muted-foreground">
-                              with "{state.actions.messageReply?.content}"
-                            </span>
-                           </>
-                            }
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Image className="h-5 w-5 text-primary" />
-                           {state.selectedPosts && state.selectedPosts.length > 0 && <>
-                           <span className="font-medium">
-                              Applied for {state.selectedPosts.length}
-                            </span>
-                            
-                           </>
-                            }
-
-                          </div>
-                        </div>
-
-
-                        <div className="flex items-center space-x-2">
-                          {editingId === state.account?.id ? (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleSaveEdit}
-                                className="h-8 w-8"
-                              >
-                                <Check className="h-4 w-4 text-green-500" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={handleCancelEdit}
-                                className="h-8 w-8"
-                              >
-                                <X className="h-4 w-4 text-red-500" />
-                              </Button>
-                            </>
-                          ) : (
-                            <>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={() =>
-                                  {setIsEditing(true)
-                                  setEditingId(state.account?.id||'') }
-                                }
-                              >
-                                <Pencil className="h-4 w-4 text-muted-foreground" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                              >
-                                <Trash2 className="h-4 w-4 text-red-500" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <Dialog modal open={isEditing}>
-                      <DialogContent className="sm:max-w-md">
-                          <Button variant="outline" className="mt-4 w-full">
-                            View More
-                          </Button>
-                        </DialogContent>
-                      </Dialog>
-                      {/* {editingId === state.account?.id && isEditing && (
-                        <div className="mt-4 border-t pt-4">
-                          <div className="grid gap-4">
-                            <div>
-                              <label className="text-sm font-medium mb-1 block">Trigger Keyword</label>
-                              <Input
-                                value={state.trigger?.keyword  }
-                                  
-                              />
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium mb-1 block">Response Message</label>
-                             {state.actions.messageReply?.type && <Input
-                                value={state.actions.messageReply?.content}
-                                
-                              />}
-                              <label className="text-sm font-medium mb-1 block">Response Message</label>
-                             {state.actions.commentReply?.type && <Input
-                                value={state.actions.commentReply?.content}
-                                
-                              />}
-                            </div>
-                            <div>
-                              <label className="text-sm font-medium mb-1 block">Response Message</label>
-                              <PostSelector initialAccounts={initialAccounts}/>
-                            </div>
-                          </div>
-                        </div>
-                      )} */}
-                    </CardContent>
-                  </Card>
-                 
+                <AutomationItem 
+                  onEdit={() => {setIsEditing(true); setOpenDialog(true)}}
+                  onDelete={() => handleDeleteAutomation()}
+                />
               </div>
             </div>
           );
         })}
       </div>
+      <Dialog  open={openDialog} onOpenChange={(open) => setOpenDialog(open)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] m-5 mb-10  overflow-y-scroll">
+          <DialogHeader>
+            <DialogTitle>{isEditing ? "Edit Automation" : "Create Automation"}</DialogTitle>
+            <DialogDescription>
+              {isEditing ? "Make changes to your automation settings here." : "Select accounts and posts to automate."}
+            </DialogDescription>
+          </DialogHeader>
+          <AutomationForm
+            initialAccounts={initialAccounts}
+            onSubmit={handleSaveEdit}
+            onCancel={() => {setOpenDialog(false); setIsEditing(false)}}
+            title={isEditing ? "Edit Automation" : "Create Automation"}
+            description={isEditing ? "Update your automation settings" : "Select accounts and posts to automate"}
+            submitText={isEditing ? "Save Changes" : "Create Automation"}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
