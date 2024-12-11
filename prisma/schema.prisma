@@ -19,27 +19,71 @@ model User {
 }
 
 model SocialAccount {
-  id               String      @id @default(uuid())
-  social_type      social_type
-  username         String
+  id                  String                   @id @default(uuid())
+  social_type         social_type
+  username            String
   profile_picture_url String?
-  status           social_connection_status
-  account_id       String
-  access_token     String?
-  token_expires_at DateTime?   @db.Timestamp(6)
-  created_at       DateTime?   @default(now()) @db.Timestamp(6)
-  updated_at       DateTime?   @default(now()) @db.Timestamp(6)
-  user_id          String
-  user             User?       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "social_accounts_user_id_user_id_fk")
+  status              social_connection_status
+  account_id          String
+  access_token        String?
+  token_expires_at    DateTime?                @db.Timestamp(6)
+  created_at          DateTime?                @default(now()) @db.Timestamp(6)
+  updated_at          DateTime?                @default(now()) @db.Timestamp(6)
+  user_id             String
+  automations         Automation[]
+  user                User                     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "social_accounts_user_id_user_id_fk")
 
   @@map("social_accounts")
+}
+
+model Automation {
+  id           String        @id @default(uuid())
+  name         String
+  isActive     Boolean       @default(true)
+  account_id   String
+  target_posts String[]
+  created_at   DateTime?     @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?     @default(now()) @db.Timestamp(6)
+  account      SocialAccount @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  actions      Action[]
+  triggers     Trigger?      
+}
+
+model Trigger {
+  id            String       @id @default(uuid())
+  type          trigger_type
+  keyword       String
+  automation_id String       @unique
+  automation    Automation   @relation(fields: [automation_id], references: [id], onDelete: Cascade)
+
+}
+
+model Action {
+  id            String      @id @default(uuid())
+  type          action_type
+  content       String
+  automation_id String
+  automation    Automation  @relation(fields: [automation_id], references: [id], onDelete: Cascade)
+
+  @@map("actions")
 }
 
 enum social_type {
   INSTAGRAM
   TWITTER
 }
+
 enum social_connection_status {
   CONNECTED
   DISCONNECTED
+}
+
+enum trigger_type {
+  comment
+  message
+}
+
+enum action_type {
+  commentReply
+  messageReply
 }

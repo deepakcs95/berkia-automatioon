@@ -1,4 +1,4 @@
-import { connectInstagramAccount } from '@/app/actions/instagram/actions';
+import { connectInstagramAccount } from '@/app/actions/instagram';
 import { redirect } from 'next/navigation';
 
 export default  async function Page({searchParams,

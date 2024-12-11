@@ -1,3 +1,5 @@
+import { Automation ,Action,Trigger, Prisma} from "@prisma/client";
+
 export type PostItem = {
     id: string;
   media_url: string;
@@ -10,6 +12,16 @@ export type PostItem = {
     posts:PostItem[],
     after?:string
   }
+
+  export type AutomationsType = Prisma.AutomationGetPayload<{
+    include: { 
+      
+      actions: true, 
+      triggers: true 
+    }
+  }>
+ 
+ 
 
   export interface InstagramAutomationState {
     account: {

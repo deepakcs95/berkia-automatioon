@@ -26,3 +26,4 @@ export const AutomationFormSection = ({
     </Card>
   );
 };
+

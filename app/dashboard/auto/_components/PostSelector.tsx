@@ -14,17 +14,27 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { getInstagramPostsByAccountId } from '@/app/actions/instagram/actions'
-import { InstaAccountProps } from '../../account/_components/account-card'
+import { getInstagramPostsByAccountId } from '@/app/actions/instagram'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { PostCard } from './ui/post-card'
-import { usePostSelection } from './hooks/usePostSelection'
+import  PostCard from './ui/PostCard'
 
-export function PostSelector({ initialAccounts }: { initialAccounts: InstaAccountProps[] }) {
+
+interface PostSelectorProps {
+  field: {
+    value: string[];
+    onChange: (newValue: string[]) => void;
+  };
+  error?: string;
+  postaccountId: string;
+  selectedPosts?: string[];
+}
+
+export function PostSelector({ field, postaccountId, selectedPosts }: PostSelectorProps) {
   const [open, setOpen] = React.useState(false)
   const containerRef = React.useRef<HTMLDivElement>(null)
 
-  const {handleSelect, isPostSelected, selectedPosts} = usePostSelection()
+
+ 
 
   const {
     data,
@@ -33,10 +43,10 @@ export function PostSelector({ initialAccounts }: { initialAccounts: InstaAccoun
     hasNextPage,
     fetchNextPage
   } = useInfiniteQuery({
-    queryKey: ['instagram-posts', initialAccounts[0]?.account_id],
+    queryKey: ['instagram-posts', postaccountId],
     queryFn: ({ pageParam  }) => 
       getInstagramPostsByAccountId(
-        initialAccounts[0]?.account_id || '',
+        postaccountId || '',
         pageParam,
         2
       ),
@@ -72,7 +82,7 @@ export function PostSelector({ initialAccounts }: { initialAccounts: InstaAccoun
   }, [data])
  
   // If no accounts are available, show a message
-  if (!initialAccounts?.length) {
+  if (!postaccountId?.length) {
     return <div>No accounts available</div>
   }
 
@@ -109,7 +119,7 @@ export function PostSelector({ initialAccounts }: { initialAccounts: InstaAccoun
                     .map((post) => {
                       if (!post) return null;
                       return (
-                        <PostCard key={post.id} isSelected={isPostSelected(post.id)} post={post} onSelect={handleSelect} />
+                        <PostCard fields={field} key={post.id} post={post}   />
                       )
                     })
                   }

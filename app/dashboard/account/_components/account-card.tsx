@@ -15,7 +15,7 @@ import { useState } from "react";
 import {
   deleteConnectedInstagramAccount,
   disconnectInstagramAccount,
-} from "@/app/actions/instagram/actions";
+} from "@/app/actions/instagram";
 import { instagramAuthUrl } from "./add-account";
 
 export interface InstaAccountProps {

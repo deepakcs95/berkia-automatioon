@@ -30,6 +30,7 @@ if(!session?.user) return redirect('/sign-in');
             console.log('✅ Instagram account connected successfully ');
             return {success: true , account}
         }
+        revalidatePath('/dashboard/account');
     } catch (error) {
         
         return {success: false, error}
@@ -126,9 +127,21 @@ export async function disconnectInstagramAccount(account_id: string) {
      redirect('/sign-in');
   }
 
+  try{
   const accounts = await getInstagramAccountsByUserId(session.user.id);
 
-  return accounts;}
+  if (!(accounts.length > 0)) {
+    return { status: 404, accounts: null, message: "No Instagram accounts found" };
+  }
+
+  return { status: 200, accounts, message: "Instagram accounts fetched successfully" };
+  }
+  catch(error){
+    console.error('Error fetching Instagram accounts:', error);
+    return { status: 500, accounts: null, message: "An error occurred please try again"};
+  }
+  
+}
 
 
   export async function getInstagramPostsByAccountId(instgramAccountId: string, cursor?: string, limit: number = 2) {  

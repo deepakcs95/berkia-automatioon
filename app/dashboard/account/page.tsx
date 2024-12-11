@@ -1,7 +1,7 @@
  
 import { AddAccount } from "./_components/add-account";
 import { AccountCard  } from "./_components/account-card";
-import { getCurrentUserInstagramAccounts } from "@/app/actions/instagram/actions";
+import { getCurrentUserInstagramAccounts } from "@/app/actions/instagram";
 
  
 
