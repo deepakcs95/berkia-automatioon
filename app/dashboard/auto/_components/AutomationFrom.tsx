@@ -17,7 +17,7 @@ import { AutomationSchema, AutomationSchemaType } from '@/lib/validator/automati
 
 interface AutomationFormProps {
   accounts: SocialAccountArrayType
-  onSubmit: (data:AutomationSchemaType) => void
+  onSubmit: (data:AutomationSchemaType,automation:AutomationsType) => void
   onCancel: () => void
   automation?: AutomationsType
   submitText: string
@@ -58,7 +58,10 @@ export default function AutomationForm({
 
 
 
-      const onsubSubmit = handleSubmit((data) => onSubmit(data))
+      const onsubSubmit = handleSubmit((data) => {
+        
+        onSubmit(data,automation!)
+      })
 
       const trigger_type = watch('trigger_type');
       const trigger_keyword = watch('trigger_keyword');

@@ -16,8 +16,9 @@ import AutomationForm from "./AutomationFrom";
 import { AutomationsType } from "@/lib/types";
 import { AutomationSchemaType } from "@/lib/validator/automation";
 import { toast, Toaster } from "sonner";
-import { createNewAutomation } from "@/app/actions/automations";
-import { transformAutomationData } from "@/lib/utils/transform";
+import { createNewAutomation, updateAutomationAction } from "@/app/actions/automations";
+import { transformAutomationData, transformAutomationEditData } from "@/lib/utils/transform";
+import { transform } from "next/dist/build/swc/generated-native";
 
 export interface CreateEditAutomationFormProps {
   accounts: SocialAccountArrayType;
@@ -58,12 +59,13 @@ export default function AutomationsPage({
     setIsEditing(false);
   }, []);
 
-  const onSubmit = useCallback(async (data: AutomationSchemaType) => {
+  const onSubmit = useCallback(async (data: AutomationSchemaType, automation:AutomationsType) => {
     const updatedAccounts = [...optimisticAccounts];
     const temp =[...optimisticAccounts]
     const accountIndex = updatedAccounts.findIndex(
       (account) => account.account_id === data.account_Id
     );
+    
     console.log("updatedAccounts", accountIndex, updatedAccounts);
     const transformedAutomation = transformAutomationData(data);
     setPendingAutomations((prev) =>
@@ -99,13 +101,65 @@ export default function AutomationsPage({
 
 
   }, [optimisticAccounts]);
-
-  console.log(optimisticAccounts,pendingAutomations);
   
-  const onsaveEdit = useCallback(() => {
+    const onSaveEdit = useCallback(async (data: AutomationSchemaType,automation:AutomationsType)   => {
+        const updatedAccounts = [...optimisticAccounts]
+        const accountIndex = updatedAccounts.findIndex(account => account.account_id === data.account_Id)
+        if (accountIndex === -1) {
+          console.error("Account not found")
+          return
+        }
+    
+        const automationIndex = updatedAccounts[accountIndex].automations.findIndex(
+          auto => auto.id === automation.id
+        )
+    
+        if (automationIndex === -1) {
+          console.error("Automation not found")
+          return
+        }
+    
+        const transformedAutomation = transformAutomationEditData(data, automation)
+        setPendingAutomations((prev) =>
+            new Set(prev).add(transformedAutomation.id)
+          );
+        // Optimistically update the UI
+        
+        startTransition(() => {
+          updatedAccounts[accountIndex].automations[automationIndex] = transformedAutomation
+          setOptimisticAccounts(updatedAccounts)
+        });
+
+    
+        // Set pending state
+    
+       
+       
+
     setOpenDialog(false);
     setIsEditing(false);
-  }, []);
+
+    const success = await updateAutomationAction(transformedAutomation);
+    if (success.status === 200) {
+      toast.success(success.message);
+    } else {
+      toast.error(success.message);
+    }
+
+    setPendingAutomations(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(transformedAutomation.id)
+        return newSet
+      })
+
+
+  }, [optimisticAccounts]);
+
+  const onCreate =useCallback((data: AutomationSchemaType) => {
+     
+  }, [optimisticAccounts]);
+
+ 
 
   if (!optimisticAccounts) {
     return (
@@ -161,7 +215,7 @@ export default function AutomationsPage({
           <AutomationForm
             accounts={optimisticAccounts}
             onCancel={onCancel}
-            onSubmit={onSubmit}
+            onSubmit={isEditing ? onSaveEdit : onCreate}
             automation={automationRef.current}
             submitText={isEditing ? "Save changes" : "Create automation"}
           />

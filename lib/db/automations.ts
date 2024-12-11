@@ -26,7 +26,7 @@ export const getAllSocialAccountWithAutomations = async (userId: string) => {
             triggers: true,
           },
           orderBy: {
-            updated_at: "desc",
+            created_at: "desc",
           },
         }
       },
@@ -95,6 +95,100 @@ export const createAutomation = async (userId: string, data: AutomationsType) =>
     
   } catch (error) {
     console.error("Error creating automation:", error);
+    throw new Error('An error occurred please try again')
+  }
+};
+
+
+export const updateAutomation = async (userId: string, data: AutomationsType) => {
+  try {
+    
+
+    const socialAccount = await db.socialAccount.findFirst({
+      where: {
+        account_id: data.account_id,
+        user_id: userId,
+      },
+    });
+ 
+    if (!socialAccount) {
+      console.error(
+        `No social account found for user with id ${userId} and account id ${data.account_id} 🤔`
+      );
+      throw new Error(`No social account found for the user `)
+    }
+    
+    
+    const existingAutomation = await db.automation.findUnique({
+      where: { id: data.id },
+      include: { triggers: true }
+    });
+
+    if (!existingAutomation) {
+      throw new Error(`Automation with id ${data.id} not found`);
+    }
+
+
+    data.account_id = socialAccount.id
+
+    const updatedAutomation = await db.$transaction(async (transaction) => {
+      
+      const automation = await transaction.automation.update({
+        where: { id: data.id },
+        data: {
+          name: data.name,
+          isActive: data.isActive,
+          updated_at: new Date(),
+          target_posts: data.target_posts,
+          actions: {
+            deleteMany: {},  
+            create: data.actions.map((action) => ({
+              id: action.id,
+              type: action.type,
+              content: action.content,
+            })),
+          },
+        },
+        include: {
+          actions: true,
+          triggers: true,
+        },
+      });
+    
+      if (data.triggers) {
+        if (automation.triggers) {
+          await transaction.trigger.update({
+            where: { id: automation.triggers.id },
+            data: {
+              type: data.triggers.type,
+              keyword: data.triggers.keyword,
+            },
+          });
+        } else {
+          await transaction.trigger.create({
+            data: {
+              id: data.triggers.id,
+              type: data.triggers.type,
+              keyword: data.triggers.keyword,
+              automation_id: data.id,
+            },
+          });
+        }
+      } else if (automation.triggers) {
+        await transaction.trigger.delete({
+          where: { id: automation.triggers.id },
+        });
+      }
+      
+      
+      return true;
+    })
+
+    console.log(`Automation updated for user with id ${userId} 🎉`);
+   return true
+    
+  } catch (error) {
+    console.error("Error updating automation:", error);
     throw new Error('An error occurred please try again')
   }
 };

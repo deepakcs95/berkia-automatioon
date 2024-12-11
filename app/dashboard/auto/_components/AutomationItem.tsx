@@ -27,7 +27,8 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
     <Card 
       className={cn(
         "group transition-all duration-500 hover:shadow-lg",
-        isPending ? "animate-fade-in-slow animate-fade-out-slow" : ""
+        isPending ? "opacity-60 animate-pulse" 
+          : "opacity-100 animate-fade-in"
       )}
       >
       <CardContent className="p-6">

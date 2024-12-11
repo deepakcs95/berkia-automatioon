@@ -42,4 +42,45 @@ export function transformAutomationData(input: AutomationSchemaType): Automation
   };
 }
 
+export function transformAutomationEditData(
+    data: AutomationSchemaType,
+    existingAutomation: AutomationsType
+  ): AutomationsType {
+    const now = new Date() 
+  
+    return {
+      id: existingAutomation.id,
+      name: existingAutomation.name,
+      isActive:  existingAutomation.isActive,
+      account_id: data.account_Id,
+      target_posts: data.selectedPosts || existingAutomation.target_posts,
+      created_at: existingAutomation.created_at,
+      updated_at: now,
+      actions: [
+        ...(data.comment_action ? [
+            {
+              id: existingAutomation.actions[0]?.id || uuidv4(),
+              type: action_type.commentReply,
+              content: data.comment_action,
+              automation_id: existingAutomation.id,
+            }
+          ] : []),
+          ...(data.message_action ? [
+            {
+              id: existingAutomation.actions[1]?.id || uuidv4(),
+              type: action_type.messageReply,
+              content: data.message_action,
+              automation_id: existingAutomation.id,
+            }
+          ] : []),
+      ],
+      triggers: {
+        id: existingAutomation.triggers?.id || uuidv4(),
+        type: data.trigger_type,
+        keyword: data.trigger_keyword,
+        automation_id: existingAutomation.id,
+      },
+    };
+  }
+
  

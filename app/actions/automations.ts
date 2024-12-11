@@ -1,11 +1,12 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { createAutomation, getAllSocialAccountWithAutomations } from "@/lib/db/automations";
+import { createAutomation, getAllSocialAccountWithAutomations, updateAutomation } from "@/lib/db/automations";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import {  AutomationSchema, AutomationSchemaType } from "@/lib/validator/automation";
 import { AutomationsType } from "@/lib/types";
+import { X } from "lucide-react";
 
 export async function createNewAutomation(automation: AutomationsType) {
   try {
@@ -28,6 +29,25 @@ export async function createNewAutomation(automation: AutomationsType) {
     revalidatePath("/dashboard/automations");
   }
 }
+
+export async function updateAutomationAction(automation: AutomationsType) {
+  try {
+    const id = await getAuthSession();
+
+     
+   const success = await updateAutomation(id, automation);
+      if(!success) return {status: 500, message: "An error occurred please try again"};
+
+      return {status:200, message:"Automation updated successfully"}
+  } catch (error) {
+    return {status:500, message:"An error occurred please try again"}
+  }finally{
+    revalidatePath("/dashboard/automations");
+  }
+}
+
+
+
 
 export async function getAllSocialAccountAndAutomations() {
   const id = await getAuthSession();
