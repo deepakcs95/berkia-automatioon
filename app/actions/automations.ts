@@ -84,26 +84,7 @@ export async function getAllSocialAccountAndAutomations() {
   )(id);
 }
 
-const example = {
-  account: {
-    id: "17841470800772554",
-  },
-  trigger: {
-    type: "comment",
-    keyword: "sds",
-  },
-  actions: {
-    messageReply: {
-      type: "messageReply",
-      content: "sd",
-    },
-    commentReply: {
-      type: "commentReply",
-      content: "sdsd",
-    },
-  },
-  selectedPosts: ["17862159981290952"],
-};
+ 
 
 
 export async function getAuthSession() {

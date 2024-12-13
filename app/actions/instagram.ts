@@ -33,14 +33,12 @@ if(!session?.user) return redirect('/sign-in');
 
     try {
       
-      const { access_token } = await getInstagramToken(code);
-      const InstagramUser = await getInstagramUser(access_token);
-      const longLivedToken = await getLongLivedToken(access_token);
-      const account = await saveInstagramAccount(session.user?.id || '',InstagramUser,longLivedToken);
-      if(!account){
-        console.log('❌ Error connecting Instagram account ');
-        return {success: false , error: "Error connecting Instagram account"}
-      }else{
+      const token = await getInstagramToken(code);
+      const longLivedToken = await getLongLivedToken(token.access_token);
+      const user = await getInstagramUser(longLivedToken.access_token);
+      const account = await saveInstagramAccount(session.user?.id || '',user, longLivedToken.access_token)
+      
+        if(account) {
         console.log('✅ Instagram account connected successfully ');
         revalidateTag('instagram-accounts');
         revalidatePath('/dashboard/account');
@@ -70,8 +68,7 @@ export async function deleteConnectedInstagramAccount(account_id: string) {
 
 
     if (!accountToDelete) {
-      console.log('❌ Instagram account not found');
-      return {success: false , message: "Instagram account not found"}
+      return { success: false, error: "Instagram account not found" };
     }
 
     await db.socialAccount.delete({ where: { id: accountToDelete.id } });
