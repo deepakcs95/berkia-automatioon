@@ -15,7 +15,7 @@ export  default async function AccountPage({searchParams,
   const status = await (await searchParams).status as string;    
 
  
- 
+  
    
   const {accounts} = await getCurrentUserInstagramAccounts()  
 

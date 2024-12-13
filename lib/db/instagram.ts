@@ -1,3 +1,5 @@
+'server only'
+
 import { cache } from 'react';
 import { InstagramUser } from '../Integration/social-account-auth';
 import { db } from '@/lib/db/prisma'; 

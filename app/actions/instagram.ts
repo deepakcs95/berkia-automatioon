@@ -10,6 +10,12 @@ import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { redirect } from "next/navigation";
 
   
+export async function connect(code: string) {
+  console.log(code);
+  
+     return code;
+  }
+
 
 const getCachedAccounts = unstable_cache(
   async (userId: string) => {
