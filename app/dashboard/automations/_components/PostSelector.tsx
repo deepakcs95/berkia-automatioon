@@ -6,6 +6,10 @@ import {   ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
@@ -17,6 +21,8 @@ import {
 import { getInstagramPostsByAccountId } from '@/app/actions/instagram'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import  PostCard from './ui/PostCard'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Dialog, DialogTitle } from '@radix-ui/react-dialog'
 
 
 interface PostSelectorProps {
@@ -48,7 +54,7 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
       getInstagramPostsByAccountId(
         postaccountId || '',
         pageParam,
-        5
+        2
       ),
     getNextPageParam: (lastPage) => lastPage?.nextCursor || null  ,
     initialPageParam: "",
@@ -56,7 +62,7 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
 
    
 
-  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
+  const onScroll = React.useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     console.log('Scroll event detected', {
       scrollTop: target.scrollTop,
@@ -72,7 +78,7 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
       if(!isFetchingNextPage && hasNextPage)  fetchNextPage();
     }
  
-  }
+  },[isFetchingNextPage, hasNextPage, fetchNextPage])
 
   const memoPosts = React.useMemo(() => {
     if (!data?.pages) return []
@@ -102,28 +108,30 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[300px] p-0">
-        <Command className="h-[200px] overflow-hidden">
-          <CommandList 
-            ref={containerRef}
-            className="h-[200px] overflow-y-auto scroll-smooth"
-            onScroll={ e=>onScroll(e)}
-          >
-            <div className="p-2">
-              {isPending ? (
+        
+        <CommandDialog open={open} onOpenChange={setOpen} >
+          <DialogTitle className='sr-only'>Posts</DialogTitle>
+      <CommandList className='max-h-[300px] overflow-y-auto m-2 rounded-sm' onScroll={onScroll}>
+        <CommandGroup      >
+        {isPending ? (
                 <CommandItem disabled className="flex items-center justify-center py-4">
                   Loading posts...
                 </CommandItem>
               ) : memoPosts?.length  ? (
-                <div className="grid grid-cols-2 gap-2">
+                <>
+                <div className='grid grid-cols-3 gap-2 '>
+                  
                   {memoPosts
                     .map((post) => {
                       if (!post) return null;
                       return (
                         <PostCard fields={field} key={post.id} post={post}   />
+                         
                       )
                     })
                   }
-                </div>
+                  </div>
+                </>
               ) : (
                 <CommandItem disabled className="flex items-center justify-center py-4">
                   No posts available
@@ -134,9 +142,9 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
                 </div>
               )}
-            </div>
-          </CommandList>
-        </Command>
+        </CommandGroup>
+      </CommandList>
+    </CommandDialog>
       </PopoverContent>
     </Popover>
   )

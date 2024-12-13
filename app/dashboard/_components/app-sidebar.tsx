@@ -2,15 +2,12 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
-  BookOpen,
+   BookOpen,
   Bot,
   ChartBarIcon,
-  Command,
-  DollarSign,
+   DollarSign,
   Frame,
-  GalleryVerticalEnd,
-  Map,
+   Map,
   PieChart,
   Settings2,
   SquareTerminal,
@@ -26,7 +23,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-
+ 
 // This is sample data.
 const data = {
   user: {
@@ -90,12 +87,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
+
         <SideBarHeaderMain />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
+
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />

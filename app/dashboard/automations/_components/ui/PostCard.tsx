@@ -47,7 +47,7 @@ const PostCard = ({ post, fields  }: PostCardProps) => {
         src={post.media_type === 'VIDEO' ? post.thumbnail_url! : post.media_url}
         alt={  "Instagram post"}
         className="object-cover"
-        sizes="(max-width: 480px) 100vw, 320px"
+        sizes="(max-width: 80px) 80px, 80px"
         loading="lazy"
         quality={50}
         placeholder="blur"

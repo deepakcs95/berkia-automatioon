@@ -25,7 +25,7 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
   return (
     <Card 
       className={cn(
-        "group transition-all duration-500 hover:shadow-lg",
+        "group transition-all duration-500 hover:shadow-lg max-w-3xl",
         isPending ? "opacity-60 animate-pulse" 
           : "opacity-100 animate-fade-in"
       )}
@@ -61,7 +61,7 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
    )    }
           </div>      
 
-          <div className="flex gap-4 mx-auto flex-col items-start md:flex-row md:justify-around md:mx-0">
+          <div className=" flex gap-4 mx-auto flex-col items-start lg:flex-row lg:justify-around lg:mx-0">
             <div className="flex items-center space-x-4">
               <div className="flex-shrink-0">
                 <MessageSquare className="h-6 w-6 text-primary" />

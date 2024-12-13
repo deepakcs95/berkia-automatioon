@@ -207,6 +207,7 @@ export default function AutomationForm({
         {/* Post Selector */}
         {trigger_type.trim() === 'comment' && (
           <AutomationFormSection
+          className='md:col-span-2'
             title="Apply to posts"
             description="Apply this automation to these posts"
           >
@@ -232,7 +233,7 @@ export default function AutomationForm({
         </AutomationFormSection>)}
         </div>
 
-      <div className="flex justify-end space-x-2">
+      <div className="flex justify-end space-x-2 mt-6">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>

@@ -1,14 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { ChevronsUpDown, Instagram, Plus } from "lucide-react";
+import {   Instagram  } from "lucide-react";
 
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import Link from "next/link";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 export function SidebarHeader() {
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
+      <SidebarMenuItem className="flex justify-between items-center">
+        <Link href="/">
         <SidebarMenuButton
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
@@ -20,8 +23,10 @@ export function SidebarHeader() {
             <span className="truncate font-semibold">Instagram</span>
             <span className="truncate text-xs">Free</span>
           </div>
-          <ChevronsUpDown className="ml-auto" />
         </SidebarMenuButton>
+          </Link>
+          <ModeToggle />
+
       </SidebarMenuItem>
     </SidebarMenu>
   );
