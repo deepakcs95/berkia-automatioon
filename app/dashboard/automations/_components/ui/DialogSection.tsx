@@ -8,7 +8,7 @@ interface DeleteDialogProps {
     isEditing: boolean;
     children: React.ReactNode;
 }
-export const AutomationDialog = React.memo(function AutomationDialog({children,openDialog,setOpenDialog,isEditing}:DeleteDialogProps) {
+ const AutomationDialog = React.memo(function AutomationDialog({children,openDialog,setOpenDialog,isEditing}:DeleteDialogProps) {
   return (
     <Dialog  open={openDialog} onOpenChange={(open) => setOpenDialog(open)}>
     <DialogContent className="max-w-[95vw] sm:max-w-xl max-h-[90vh] overflow-y-auto mx-auto">
@@ -25,3 +25,4 @@ export const AutomationDialog = React.memo(function AutomationDialog({children,o
   )
 })
 
+export default AutomationDialog

@@ -9,12 +9,19 @@ import AddAutomationCard from "./AddAutomationCard";
 import { AccountList } from "./AccountList";
 import { SocialAccountArrayType } from "@/lib/db/automations";
 import AutomationItem from "./AutomationItem";
-import { AutomationDialog } from "./ui/DialogSection";
-import AutomationForm from "./AutomationFrom";
 import { AutomationsType } from "@/lib/types";
 import { useAutomationOptimistic } from "@/hooks/useOptimisticAutomations";
 import { AutomationSchemaType } from "@/lib/validator/automation";
- 
+import dynamic from "next/dynamic";
+
+import AutomationDialog from "./ui/DialogSection";
+import FormSkeleton from "@/components/skeleton/FormSkeleton";
+
+export const LazyAutomationForm = dynamic(() => import("./AutomationFrom"), {
+  ssr: false,
+  loading: () => <AutomationDialog openDialog={true} isEditing={false} setOpenDialog={() => {} }><FormSkeleton/></AutomationDialog>,
+});
+
 export interface CreateEditAutomationFormProps {
   accounts: SocialAccountArrayType;
 }
@@ -40,6 +47,15 @@ export default function AutomationsPage({
         handleDeleteAutomation
       } = useAutomationOptimistic(accounts);
   
+
+
+
+
+
+
+
+
+      
   const onAddClick = useCallback(() => {
     automationRef.current = undefined;
     setIsEditing(false);
@@ -122,7 +138,7 @@ export default function AutomationsPage({
           setOpenDialog={setOpenDialog}
           isEditing={isEditing}
         >
-          <AutomationForm
+          <LazyAutomationForm
             accounts={optimisticAccounts}
             onCancel={onCancel}
             onSubmit={isEditing ? onSaveEdit : onSubmit}
