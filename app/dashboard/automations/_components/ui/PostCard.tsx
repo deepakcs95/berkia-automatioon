@@ -43,7 +43,6 @@ const PostCard = ({ post, fields  }: PostCardProps) => {
       onClick={() => handlePostToggle(post.id)}
       className="group relative aspect-square cursor-pointer"
     >
-      <div>{JSON.stringify(fields)}</div>
       <Image
         src={post.media_type === 'VIDEO' ? post.thumbnail_url! : post.media_url}
         alt={  "Instagram post"}

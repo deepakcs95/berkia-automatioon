@@ -71,6 +71,8 @@ export const getInstagramAccountsByUserId   = cache(async (userId: string) => {
   });
   return account;
 });
+
+
 export const getAllDetailsOfInstagramAccountsByUserId   = cache(async (userId: string) => {
   const account = await db.socialAccount.findMany({
     where: { user_id: userId },
@@ -91,3 +93,7 @@ export const updateRefreshToken = cache(async (id: string, access_token: string,
   });
   return account;
 });
+
+
+export type  InstagramAccounts = Awaited<ReturnType<typeof getInstagramAccountsByUserId>>
+export type InstagramAccountItem = InstagramAccounts[number];

@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTrigger, AlertDialogFooter, AlertDialogTitle, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
-import { MessageSquare, MessageCircle, ArrowRight, Trash2, Pencil, Image } from "lucide-react";
+import { MessageSquare, MessageCircle, ArrowRight, Trash2, Pencil,  ImagesIcon } from "lucide-react";
 import { AutomationsType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 // In automation-item.tsx
 interface AutomationItemProps {
     onEdit: (automation:AutomationsType) => void;
-    onDelete: () => void;
+    onDelete: (automation:AutomationsType) => void;
     automation: AutomationsType;
-    isPending:Boolean;
+    isPending:boolean;
    
 }
 
@@ -21,7 +21,6 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
   const commentActionIndex = automation.actions.findIndex((action) => action.type === 'commentReply');
   const messageActionIndex = automation.actions.findIndex((action) => action.type === 'messageReply');
  
-  console.log(isPending);
   
   return (
     <Card 
@@ -103,7 +102,7 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
             {automation.target_posts && automation.target_posts.length > 0 && (
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
-                  <Image className="h-6 w-6 text-primary" />
+                  <ImagesIcon className="h-6 w-6 text-primary" />
                 </div>
                 <div>
                   <h3 className="font-semibold">Applied Posts</h3>
@@ -119,6 +118,7 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
     </Card>
   );
 })
+AutomationItem.displayName = 'AutomationItem';
 
 export default AutomationItem
 
@@ -129,7 +129,7 @@ const AutomationActions = memo(function AutomationActions({
 }: {
   automation: AutomationsType;
   onEdit: (id: string) => void;
-  onDelete: () => void;
+  onDelete: (automation:AutomationsType) => void;
 }) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
@@ -179,7 +179,7 @@ const AutomationActions = memo(function AutomationActions({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={onDelete} className="bg-red-500 hover:bg-red-600">
+              <AlertDialogAction onClick={()=>onDelete(automation)} className="bg-red-500 hover:bg-red-600">
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>

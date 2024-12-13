@@ -16,19 +16,12 @@ import {
   deleteConnectedInstagramAccount,
   disconnectInstagramAccount,
 } from "@/app/actions/instagram";
-import { instagramAuthUrl } from "./add-account";
+import { instagramAuthUrl } from "./AddAccount";
+import { SocialAccountType } from "@/lib/db/automations";
+import Image from "next/image";
 
-export interface InstaAccountProps {
-    id: string;
-    social_type: string;
-    username: string;
-    profile_picture_url: string | null;
-    status: string;
-    user_id: string | null;
-    account_id: string;
-  };
-
-export function AccountCard({ account }: { account: InstaAccountProps }) {
+ 
+export function AccountCard({ account }: { account: SocialAccountType }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -84,7 +77,7 @@ export function AccountCard({ account }: { account: InstaAccountProps }) {
             <div className="h-14 w-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
               <div className="h-full w-full rounded-full bg-white flex items-center justify-center">
                 {account.profile_picture_url ? (
-                  <img
+                  <Image
                     src={account.profile_picture_url}
                     alt={account.username}
                     className="h-full w-full rounded-full object-cover"

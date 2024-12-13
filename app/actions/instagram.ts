@@ -24,7 +24,7 @@ if(!session?.user) return redirect('/sign-in');
       const token = await getInstagramToken(code);
       const longLivedToken = await getLongLivedToken(token.access_token);
       const user = await getInstagramUser(longLivedToken.access_token);
-      const account = await saveInstagramAccount(session.user?.id!,user, longLivedToken.access_token)
+      const account = await saveInstagramAccount(session.user?.id || '',user, longLivedToken.access_token)
       
         if(account) {
             console.log('✅ Instagram account connected successfully ');

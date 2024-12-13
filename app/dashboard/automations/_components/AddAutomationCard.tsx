@@ -36,4 +36,3 @@ interface AddAutomationCardProps {
 })
 
 export default AddAutomationCard
-

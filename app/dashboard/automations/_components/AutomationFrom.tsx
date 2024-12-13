@@ -104,12 +104,18 @@ export default function AutomationForm({
                   <div className="flex items-center justify-center gap-3">
                     <Image src={account.profile_picture_url || ''} alt="Account" className="rounded-full" unoptimized   loading='lazy' quality={20} width={15} height={15} />
                     <p>@{account.username}</p>
-                    <span>{account.status === "CONNECTED" ? "Connected" : "Disconnected"}</span>
+                    
+                     
+                    <span  className={cn(
+              "text-sm",
+              account.status === "CONNECTED" ? "text-green-500" : "text-red-500"
+            )} >{account.status === "CONNECTED" ? "●" : "○"}</span>
                   </div>
                 </SelectItem>
               ))}
             </SelectContent>
-          </Select>)}
+          </Select>
+        )}
           />
           {errors.account_Id && (
         <p className="text-red-500 text-sm mt-1">
@@ -227,7 +233,7 @@ export default function AutomationForm({
         </div>
 
       <div className="flex justify-end space-x-2">
-        <Button variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
         <Button type='submit' onClick={onsubSubmit}  >

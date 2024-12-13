@@ -225,7 +225,7 @@ export default   function BillingPage() {
               <CardHeader>
                 <CardTitle className="text-base">What happens if I exceed my account limit?</CardTitle>
                 <CardDescription>
-                  You'll need to upgrade to a higher plan to add more Instagram accounts. We'll notify you when you're close to your limit.
+                  You&lsquo;ll need to upgrade to a higher plan to add more Instagram accounts. We&lsquo;ll notify you when you&lsquo;re close to your limit.
                 </CardDescription>
               </CardHeader>
             </Card>

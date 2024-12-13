@@ -48,7 +48,7 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
       getInstagramPostsByAccountId(
         postaccountId || '',
         pageParam,
-        2
+        5
       ),
     getNextPageParam: (lastPage) => lastPage?.nextCursor || null  ,
     initialPageParam: "",
@@ -69,7 +69,7 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
       target.scrollHeight - 20
     ) {
       console.log('Near bottom, fetching next page...');
-      !isFetchingNextPage && hasNextPage && fetchNextPage();
+      if(!isFetchingNextPage && hasNextPage)  fetchNextPage();
     }
  
   }

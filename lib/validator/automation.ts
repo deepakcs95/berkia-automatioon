@@ -62,3 +62,7 @@ export const AutomationSchema = z.object({
 });   
 
 export type AutomationSchemaType = z.infer<typeof AutomationSchema>
+
+
+
+

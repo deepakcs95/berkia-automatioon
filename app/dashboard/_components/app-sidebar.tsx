@@ -53,7 +53,7 @@ const data = {
     },
     {
       title: "Accounts",
-      url: "/dashboard/auto",
+      url: "/dashboard/account",
       icon: BookOpen,
     },
     {

@@ -1,12 +1,12 @@
 import { db } from "@/lib/db/prisma";
-import { action_type, Prisma, trigger_type } from "@prisma/client";
-import { AutomationSchemaType } from "../validator/automation";
-import { AutomationsType } from "../types";
+import {   trigger_type } from "@prisma/client";
+ import { AutomationsType } from "../types";
+import { cache } from "react";
 
 
  
 
-export const getAllSocialAccountWithAutomations = async (userId: string) => {
+export const getAllSocialAccountWithAutomations = cache(async (userId: string) => {
    
     const automations = await db.socialAccount.findMany({
       where: {
@@ -36,7 +36,7 @@ export const getAllSocialAccountWithAutomations = async (userId: string) => {
     return automations   
      
    
-};
+});
 
  
 
@@ -72,8 +72,8 @@ export const createAutomation = async (userId: string, data: AutomationsType) =>
         triggers: data.triggers ? {
           create: {
               id: data.triggers?.id ,
-              type: data.triggers?.type!!,
-              keyword: data.triggers?.keyword!!,
+              type: data.triggers?.type || trigger_type.comment,
+              keyword: data.triggers?.keyword || '',
             },
         } : undefined,
         actions: {
@@ -193,6 +193,21 @@ export const updateAutomation = async (userId: string, data: AutomationsType) =>
   }
 };
 
+export const deleteAutomation = async ( automationId: string) => {
+  try {
+      await db.automation.delete({
+      where: {
+        id: automationId,
+        
+      },
+    });
+    console.log(`Automation deleted for user with id ${automationId} 🎉`);
+    return true
+  } catch (error) {
+    console.error("Error deleting automation:", error);
+    throw new Error('An error occurred please try again')
+  }
+};
 
 export type SocialAccountArrayType =  Awaited<ReturnType<typeof getAllSocialAccountWithAutomations>>
 export type SocialAccountType =  Omit<SocialAccountArrayType[number], 'automations'>;

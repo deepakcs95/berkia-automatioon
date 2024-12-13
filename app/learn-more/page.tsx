@@ -33,7 +33,7 @@ export default function LearnMore() {
                 <CardContent>
                   <p className="mb-4">
                     Our intelligent system allows you to set up custom triggers and responses for
-                    comments and direct messages. Here's how it works:
+                    comments and direct messages. Heres how it works:
                   </p>
                   <ol className="list-decimal list-inside space-y-2">
                     <li>Define keywords or phrases that will activate your automated responses</li>
@@ -73,9 +73,9 @@ export default function LearnMore() {
             </h2>
             <Accordion type="single" collapsible className="w-full max-w-3xl">
               <AccordionItem value="item-1">
-                <AccordionTrigger>Is it against Instagram's terms of service?</AccordionTrigger>
+                <AccordionTrigger>Is it against Instagram&lsquo;s terms of service?</AccordionTrigger>
                 <AccordionContent>
-                  Our service is designed to comply with Instagram's terms of service. We use
+                  Our service is designed to comply with Instagram&lsquo;s terms of service. We use
                   official APIs and follow best practices to ensure that your account remains in
                   good standing.
                 </AccordionContent>
