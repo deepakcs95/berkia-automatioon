@@ -6,10 +6,22 @@ import { db } from "@/lib/db/prisma";
 import { getInstagramPosts, getInstagramToken, getInstagramUser, getLongLivedToken, validateInstagramToken } from "@/lib/Integration/social-account-auth";
 import { SocialAccount } from "@prisma/client";
 import next from "next";
-import { revalidatePath, unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { redirect } from "next/navigation";
 
   
+
+const getCachedAccounts = unstable_cache(
+  async (userId: string) => {
+     const result = await getInstagramAccountsByUserId(userId  );
+     return result;
+  },
+  ['instagram-accounts'],
+  {
+    tags: ['instagram-accounts'],
+   }
+ ); 
+
 
 export async function connectInstagramAccount(  
     code: string)
@@ -21,16 +33,19 @@ if(!session?.user) return redirect('/sign-in');
 
     try {
       
-      const token = await getInstagramToken(code);
-      const longLivedToken = await getLongLivedToken(token.access_token);
-      const user = await getInstagramUser(longLivedToken.access_token);
-      const account = await saveInstagramAccount(session.user?.id || '',user, longLivedToken.access_token)
-      
-        if(account) {
-            console.log('✅ Instagram account connected successfully ');
-            return {success: true , account}
-        }
+      const { access_token } = await getInstagramToken(code);
+      const InstagramUser = await getInstagramUser(access_token);
+      const longLivedToken = await getLongLivedToken(access_token);
+      const account = await saveInstagramAccount(session.user?.id || '',InstagramUser,longLivedToken);
+      if(!account){
+        console.log('❌ Error connecting Instagram account ');
+        return {success: false , error: "Error connecting Instagram account"}
+      }else{
+        console.log('✅ Instagram account connected successfully ');
+        revalidateTag('instagram-accounts');
         revalidatePath('/dashboard/account');
+        return {success: true , account}
+      }
     } catch (error) {
         
         return {success: false, error}
@@ -48,7 +63,7 @@ export async function deleteConnectedInstagramAccount(account_id: string) {
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
 
   try {
-    const accounts = await getInstagramAccountsByUserId(session.user.id);
+    const accounts = await getCachedAccounts(session.user.id);
     const accountToDelete = accounts.find(
       (account) => account.account_id === account_id
     );
@@ -61,6 +76,8 @@ export async function deleteConnectedInstagramAccount(account_id: string) {
 
     await db.socialAccount.delete({ where: { id: accountToDelete.id } });
     console.log('✅ Instagram account deleted successfully ');
+    revalidateTag('instagram-accounts');
+    revalidatePath('/dashboard/account');
     return { success: true, message: "Instagram account deleted successfully" };
   } catch (error) {
     console.error('❌ Error deleting Instagram account:', error);  
@@ -79,7 +96,7 @@ export async function disconnectInstagramAccount(account_id: string) {
   
     try {
       // First, find the specific Instagram account with the given account_id
-      const accounts = await getInstagramAccountsByUserId(session.user.id);
+      const accounts = await getCachedAccounts(session.user.id);
       const accountToDisconnect = accounts.find(
         (account) => account.account_id === account_id
       );
@@ -103,6 +120,9 @@ export async function disconnectInstagramAccount(account_id: string) {
         }
       });
   
+      console.log('✅ Instagram account disconnected successfully');
+revalidateTag('instagram-accounts');
+
       return { 
         success: true, 
         message: "Instagram account disconnected successfully" 
@@ -115,6 +135,7 @@ export async function disconnectInstagramAccount(account_id: string) {
         message: "An error occurred please try again" 
       };
     }finally{
+
         revalidatePath('/dashboard/account');
     }
   }
@@ -128,10 +149,10 @@ export async function disconnectInstagramAccount(account_id: string) {
   }
 
   try{
-  const accounts = await unstable_cache(async()=>await getInstagramAccountsByUserId(session?.user?.id || '' ), ['accounts'],{
-    tags: ['accounts']})();
-
-  if (!(accounts.length > 0)) {
+    
+   const accounts = await getCachedAccounts(session.user.id);
+      
+   if (!(accounts.length > 0)) {
     return { status: 404, accounts: null, message: "No Instagram accounts found" };
   }
 
@@ -153,7 +174,8 @@ export async function disconnectInstagramAccount(account_id: string) {
   }
 
   try {
-  const accounts = await getAllDetailsOfInstagramAccountsByUserId(session.user.id);
+  const accounts = await getCachedAccounts(session.user.id);
+
   const account = accounts.find((account) => account.account_id === instgramAccountId);
 
   if (!account) {
@@ -161,7 +183,7 @@ export async function disconnectInstagramAccount(account_id: string) {
   }
 
 
-    const validatedAccount =await  validateInstagramToken(account as SocialAccount);   
+    const validatedAccount = await  validateInstagramToken(account as SocialAccount);   
     
     if(!validatedAccount) {
       revalidatePath('/');

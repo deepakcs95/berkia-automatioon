@@ -15,7 +15,7 @@ const queryClient = new QueryClient({defaultOptions: {
 export function ThemeProvider({ children }: React.ComponentProps<typeof NextThemesProvider>) {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools        />
+      {/* <ReactQueryDevtools        /> */}
       <NextThemesProvider
         attribute="class"
         defaultTheme="system"

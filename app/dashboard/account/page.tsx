@@ -4,6 +4,7 @@ import { AccountCard  } from "./_components/AccountCard";
 import { getCurrentUserInstagramAccounts } from "@/app/actions/instagram";
 import { Suspense } from "react";
 import AccountsPageSkeletion from "@/components/skeleton/AccountsPageSkeletion";
+import { revalidateTag } from "next/cache";
 
  
 
@@ -14,7 +15,7 @@ export  default async function AccountPage({searchParams,
   const status = await (await searchParams).status as string;    
 
  
-
+ 
    
   const {accounts} = await getCurrentUserInstagramAccounts()  
 
