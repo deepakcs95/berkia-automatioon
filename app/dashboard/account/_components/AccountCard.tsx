@@ -19,11 +19,14 @@ import {
 import { instagramAuthUrl } from "./AddAccount";
 import { SocialAccountType } from "@/lib/db/automations";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
  
 export function AccountCard({ account }: { account: SocialAccountType }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const router = useRouter();
 
   const handleConnectionOfAccount = async () => {
     try {
@@ -121,7 +124,7 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
             variant="outline"
             onClick={() => {
               setIsLoading(true);
-              window.location.href = instagramAuthUrl;
+              router.push(instagramAuthUrl);
             }}
             disabled={isLoading}
             className="hover:bg-primary/5"
