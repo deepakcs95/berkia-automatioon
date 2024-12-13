@@ -1,5 +1,4 @@
 "user server";
-import { eq } from "drizzle-orm";
 import { User } from "next-auth";
 import { cache } from "react";
 import { generateIdFromEmail } from "@/lib/utils";
