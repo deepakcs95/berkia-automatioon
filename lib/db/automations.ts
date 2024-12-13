@@ -1,5 +1,5 @@
 import { db } from "@/lib/db/prisma";
-import {   trigger_type } from "@prisma/client";
+import {   social_connection_status, trigger_type } from "@prisma/client";
  import { AutomationsType } from "../types";
 import { cache } from "react";
 
@@ -209,6 +209,36 @@ export const deleteAutomation = async ( automationId: string) => {
     throw new Error('An error occurred please try again')
   }
 };
+
+export const  findTriggerAndAssociatedAutomation = cache(async ({type, keyword}: {type:trigger_type, keyword: string}) => {
+  return   await db.trigger.findMany({
+     where: {
+       type: type,
+       keyword:{ equals: keyword,
+        mode: 'insensitive'},
+
+       automation: {
+         isActive: true,
+         account: {
+           status: social_connection_status.CONNECTED
+         }
+       }
+     },
+     include: {
+       automation: {
+         include: {
+           account: {
+             include: {
+               user: true
+             },
+           },
+           actions: true
+         }
+       }
+     }
+   });}
+  )
+
 
 export type SocialAccountArrayType =  Awaited<ReturnType<typeof getAllSocialAccountWithAutomations>>
 export type SocialAccountType =  Omit<SocialAccountArrayType[number], 'automations'>;

@@ -1,5 +1,6 @@
 import { processWebhook } from "@/app/actions/webhooks";
 import { db } from "../db/prisma";
+import { trigger_type } from "@prisma/client";
 
 export interface CommentWebhook {
     id: string;
@@ -40,25 +41,16 @@ export interface CommentWebhook {
     }>;
   }
 
-  export interface ProcessedCommentWebhook {
-    type: 'comment';
-    id: string;
-    comment: string | undefined;
+  export interface ProcessedWebhook {
+    type: trigger_type;
+     id: string;
+    content: string  
     sender_id: string  
-    recipient_id: string | undefined;
+    recipient_id: string  
   }
   
-  export interface ProcessedMessageWebhook {
-    type: 'message';
-    id: string;
-    message: string | undefined;
-    sender_id: string;
-    recipient_id: string;
-    timestamp: number;
-  }
-  
-  export type ProcessedWebhook = ProcessedCommentWebhook | ProcessedMessageWebhook;
-
+   
+ 
   
   export function matchWebhookTriggerType(webhookData: CommentWebhook | MessageWebhook): ProcessedWebhook | null {
     try {
@@ -71,10 +63,10 @@ export interface CommentWebhook {
           return null;
         }
         
-        const processedComment: ProcessedCommentWebhook = {
-          type: 'comment',
-          id:  webhookData?.id  ?? '',
-          comment: commentData?.text ?? '',
+        const processedComment = {
+          type: trigger_type.comment,
+          id:  commentData?.id  ?? '',
+          content: commentData?.text ?? '',
           sender_id: webhookData?.id ?? '',
           recipient_id: commentData?.id
         };
@@ -90,13 +82,12 @@ export interface CommentWebhook {
           throw new Error('No message data found in the webhook');
         }
         
-        const processedMessage: ProcessedMessageWebhook = {
-          type: 'message',
+        const processedMessage = {
+          type: trigger_type.message,
           id: webhookData?.id  ?? '',
-          message: messageData.message.text,
+          content: messageData.message.text,
           sender_id:webhookData?.id ?? '',
           recipient_id: messageData.sender.id ?? '',
-          timestamp: messageData.timestamp
         };
         
         return processedMessage;

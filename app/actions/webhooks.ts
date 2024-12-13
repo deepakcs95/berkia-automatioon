@@ -1,10 +1,9 @@
-import { db } from "@/lib/db/prisma";
+import { findTriggerAndAssociatedAutomation } from "@/lib/db/automations";
 import { validateInstagramToken } from "@/lib/Integration/social-account-auth";
-import { CommentWebhook, matchWebhookTriggerType, MessageWebhook, ProcessedCommentWebhook, ProcessedMessageWebhook, ProcessedWebhook } from "@/lib/utils/webhook"
+import {      ProcessedWebhook } from "@/lib/utils/webhook"
 import { validateUserPlan } from "@/lib/validator/account";
-import { Action, social_connection_status, trigger_type } from "@prisma/client";
-import { Award } from "lucide-react";
-
+import { Action,   trigger_type } from "@prisma/client";
+ 
 
 
 
@@ -48,32 +47,7 @@ export const processWebhook = async (webhook: ProcessedWebhook) => {
   }
   
   
-  export async  function findTriggerAndAssociatedAutomation({type, keyword}: {type:trigger_type, keyword: string}) {
-   return  await db.trigger.findMany({
-      where: {
-        type: type,
-        keyword: keyword,
-        automation: {
-          isActive: true,
-          account: {
-            status: social_connection_status.CONNECTED
-          }
-        }
-      },
-      include: {
-        automation: {
-          include: {
-            account: {
-              include: {
-                user: true
-              },
-            },
-            actions: true
-          }
-        }
-      }
-    });}
-
+  
 
 
 function extractWebhookContent(webhook: ProcessedWebhook): {
@@ -83,12 +57,12 @@ function extractWebhookContent(webhook: ProcessedWebhook): {
   if (webhook.type === trigger_type.comment) {
     return {
       type: trigger_type.comment,
-      content: webhook.comment
+      content: webhook.content
     };
   } else {
     return {
       type: trigger_type.message,
-      content: webhook.message
+      content: webhook.content
     };
   }
 }
