@@ -30,3 +30,4 @@ const DashboardHeader = memo(()=> {
     </header>
   );
 });
+DashboardHeader.displayName = 'DashboardHeader';
