@@ -109,7 +109,7 @@ export default function AutomationForm({
                     <span  className={cn(
               "text-sm",
               account.status === "CONNECTED" ? "text-green-500" : "text-red-500"
-            )} >{account.status === "CONNECTED" ? "●" : "○"}</span>
+            )} >●</span>
                   </div>
                 </SelectItem>
               ))}

@@ -145,15 +145,7 @@ export default function ChatbotPage() {
 
   if (prompts.length === 0 && !isDialogOpen) {
     return (
-      <div className="p-6 space-y-8">
-        <div className="mb-8 space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-purple-600 to-pink-600 text-transparent bg-clip-text">
-            Chatbot
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Create and manage your Instagram chatbot responses
-          </p>
-        </div>
+      
 
         <Card className="border-dashed">
           <CardContent className="pt-10 pb-10 flex flex-col items-center justify-center space-y-4">
@@ -174,21 +166,12 @@ export default function ChatbotPage() {
             </Button>
           </CardContent>
         </Card>
-      </div>
+       
     );
   }
 
   return (
-    <div className="p-6 space-y-8">
-      <div className="mb-8 space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Chatbot
-        </h2>
-        <p className="text-muted-foreground text-lg">
-          Configure your Instagram chatbot responses
-        </p>
-      </div>
-
+    <>
       {availableAccounts.length > 0 && (
         <div className="mb-6">
           <Card>
@@ -470,6 +453,7 @@ export default function ChatbotPage() {
           );
         })}
       </div>
-    </div>
+     
+    </>
   );
 }

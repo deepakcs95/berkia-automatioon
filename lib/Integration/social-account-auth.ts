@@ -22,7 +22,7 @@ export async function  getInstagramToken(code: string) {
     client_id: process.env.NEXT_PUBLIC_INSTAGRAM_CLIENT_ID!,
     client_secret: process.env.INSTAGRAM_CLIENT_SECRET!,
     grant_type: 'authorization_code',
-    redirect_uri: `${process.env.NEXTAUTH_URL}/callback/instagram`,
+    redirect_uri: `${process.env.NEXT_PUBLIC_URL}/callback/instagram`,
     code
   });
 
@@ -34,11 +34,11 @@ export async function  getInstagramToken(code: string) {
 
   const tokenData = await tokenResponse.json();
 
-  console.log('💡 Received token response', tokenData);
-
+  
   if (!tokenData?.access_token) {
     throw new Error('Failed to exchange code for token');
   }
+  console.log('💡 Received token response', tokenData);
 
   return tokenData
 
