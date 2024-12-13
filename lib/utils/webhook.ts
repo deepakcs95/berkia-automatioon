@@ -73,10 +73,10 @@ export interface CommentWebhook {
         
         const processedComment: ProcessedCommentWebhook = {
           type: 'comment',
-          id: commentData?.id ?? '',
+          id:  webhookData?.id  ?? '',
           comment: commentData?.text ?? '',
-          sender_id: commentData?.from?.id,
-          recipient_id: commentData?.media?.id
+          sender_id: webhookData?.id ?? '',
+          recipient_id: commentData?.id
         };
         
         return processedComment;
@@ -92,10 +92,10 @@ export interface CommentWebhook {
         
         const processedMessage: ProcessedMessageWebhook = {
           type: 'message',
-          id: messageData.message.mid,
+          id: webhookData?.id  ?? '',
           message: messageData.message.text,
-          sender_id: messageData.sender.id,
-          recipient_id: messageData.recipient.id,
+          sender_id:webhookData?.id ?? '',
+          recipient_id: messageData.sender.id ?? '',
           timestamp: messageData.timestamp
         };
         

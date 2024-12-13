@@ -101,8 +101,8 @@ export const executeAction = async (webhook: ProcessedWebhook,action: Action, ac
         sendReply(webhook.id, action.content,   accessToken);
         break;
       case 'messageReply':
-        
-        sendMessage(webhook.sender_id, webhook.recipient_id!,action.content,  accessToken);
+        if(webhook.type === 'comment'){sendMessageForComment(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken)}
+       else {sendMessageForMessage(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken);}
         break;
       default:
         console.warn('Unhandled action type', { actionType: action.type });
@@ -111,7 +111,7 @@ export const executeAction = async (webhook: ProcessedWebhook,action: Action, ac
 }
 
 const sendReply = async (postId: string, message: string,   accessToken: string) => {
-   await fetch(`https://graph.instagram.com/${postId}/replies?message=${message}`, {
+  const response = await fetch(`https://graph.instagram.com/${postId}/replies?message=${message}`, {
      method: 'POST',
      headers: {
        'Content-Type': 'application/json',
@@ -119,14 +119,21 @@ const sendReply = async (postId: string, message: string,   accessToken: string)
      },
       
    });
+
+   const data = await response.json();
+
+   if(data.error) {
+    console.log('❌ Reply send failed', data.error);
+    return false
+   }
+
    console.log('✅ Reply sent successfully');
-   
+   return true
 };
 
-
-const sendMessage = async (senderId: string, recipientId: string, message: string, accessToken: string) => {
-   console.log('Sending message:', message);
-   await fetch(`https://graph.instagram.com/v21.0/${recipientId}/messages`, {
+const sendMessageForMessage = async (senderId: string, recipientId: string, message: string, accessToken: string) => {
+   console.log('Sending message from message:', message);
+  const response = await fetch(`https://graph.instagram.com/v21.0/${senderId}/messages`, {
      method: 'POST',
      headers: {
        'Content-Type': 'application/json',
@@ -134,7 +141,7 @@ const sendMessage = async (senderId: string, recipientId: string, message: strin
      },
      body: JSON.stringify({
        recipient: {
-         id: senderId,
+        id: recipientId,
        },
        message: {
          text: message,
@@ -142,7 +149,44 @@ const sendMessage = async (senderId: string, recipientId: string, message: strin
      }),
       
    });
+  const data = await response.json();
+
+  if(data.error) {
+    console.log('❌ Message send failed', data.error);
+    return false
+   }
+
    console.log('✅ Message sent successfully');
+   return true
+   
+}; 
+const sendMessageForComment = async (senderId: string, recipientId: string, message: string, accessToken: string) => {
+   console.log('Sending message from comment:', message);
+  const response = await fetch(`https://graph.instagram.com/v21.0/${senderId}/messages`, {
+     method: 'POST',
+     headers: {
+       'Content-Type': 'application/json',
+       'Authorization': `Bearer ${accessToken}`,
+     },
+     body: JSON.stringify({
+       recipient: {
+        comment_id: recipientId,
+       },
+       message: {
+         text: message,
+       },
+     }),
+      
+   });
+  const data = await response.json();
+
+  if(data.error) {
+    console.log('❌ Message send failed', data.error);
+    return false
+   }
+
+   console.log('✅ Message sent successfully');
+   return true
    
 }; 
  
