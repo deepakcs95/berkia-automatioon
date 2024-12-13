@@ -74,13 +74,19 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
       <CardContent>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="h-14 w-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
-              <div className="h-full w-full rounded-full bg-white flex items-center justify-center">
+            <div className="h-14 w-14 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
+              <div className="relative h-12 w-12 rounded-full bg-white flex items-center justify-center">
                 {account.profile_picture_url ? (
                   <Image
                     src={account.profile_picture_url}
                     alt={account.username}
-                    className="h-full w-full rounded-full object-cover"
+                    className="rounded-full object-cover"
+                    sizes="(max-width: 50px) 50px"
+                    loading="lazy"
+                    quality={50}
+                    placeholder="blur"
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mPslnm2HwAFFQJOxbfFPwAAAABJRU5ErkJggg=="
+                    fill
                   />
                 ) : (
                   <Instagram className="h-7 w-7 text-gray-400" />

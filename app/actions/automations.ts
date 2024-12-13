@@ -77,7 +77,10 @@ export async function getAllSocialAccountAndAutomations() {
       }
     },
     ['automations', id],
-    { tags: ['automations'] }
+    { 
+      tags: ['automations'],
+       
+    }
   )(id);
 }
 

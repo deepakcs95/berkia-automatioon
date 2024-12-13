@@ -55,6 +55,8 @@ export async function saveInstagramAccount(userId: string,InstagramUser : Instag
 
 
 export const getInstagramAccountsByUserId   = cache(async (userId: string) => {
+  console.log('🔃 getiing instagram accounts');
+  
   const account = await db.socialAccount.findMany({
     where: { user_id: userId },
     select: {
@@ -70,7 +72,7 @@ export const getInstagramAccountsByUserId   = cache(async (userId: string) => {
     },
   });
   return account;
-});
+} )
 
 
 export const getAllDetailsOfInstagramAccountsByUserId   = cache(async (userId: string) => {

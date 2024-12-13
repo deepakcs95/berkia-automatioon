@@ -6,7 +6,8 @@ import { cache } from "react";
 
  
 
-export const getAllSocialAccountWithAutomations = cache(async (userId: string) => {
+export const getAllSocialAccountWithAutomations =  async (userId: string) => {
+   console.log('🔃 getiing instagram accounts with automation');
    
     const automations = await db.socialAccount.findMany({
       where: {
@@ -36,7 +37,7 @@ export const getAllSocialAccountWithAutomations = cache(async (userId: string) =
     return automations   
      
    
-});
+};
 
  
 

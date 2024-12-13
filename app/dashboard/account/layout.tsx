@@ -1,6 +1,4 @@
-import AccountsPageSkeletion from "@/components/skeleton/AccountsPageSkeletion";
-import { Suspense } from "react";
-
+ 
  
 export default function  Layout({ children }: { children: React.ReactNode }) {
   
@@ -14,9 +12,7 @@ export default function  Layout({ children }: { children: React.ReactNode }) {
         Connect and manage your Instagram accounts
       </p>
     </div>
-      <Suspense fallback={<AccountsPageSkeletion/>}>
             {children}
-          </Suspense>
       </div> 
   );
 }

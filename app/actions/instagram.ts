@@ -6,7 +6,7 @@ import { db } from "@/lib/db/prisma";
 import { getInstagramPosts, getInstagramToken, getInstagramUser, getLongLivedToken, validateInstagramToken } from "@/lib/Integration/social-account-auth";
 import { SocialAccount } from "@prisma/client";
 import next from "next";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 import { redirect } from "next/navigation";
 
   
@@ -128,7 +128,8 @@ export async function disconnectInstagramAccount(account_id: string) {
   }
 
   try{
-  const accounts = await getInstagramAccountsByUserId(session.user.id);
+  const accounts = await unstable_cache(async()=>await getInstagramAccountsByUserId(session?.user?.id || '' ), ['accounts'],{
+    tags: ['accounts']})();
 
   if (!(accounts.length > 0)) {
     return { status: 404, accounts: null, message: "No Instagram accounts found" };

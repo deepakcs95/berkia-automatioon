@@ -2,6 +2,8 @@
 import { AddAccount } from "./_components/AddAccount";
 import { AccountCard  } from "./_components/AccountCard";
 import { getCurrentUserInstagramAccounts } from "@/app/actions/instagram";
+import { Suspense } from "react";
+import AccountsPageSkeletion from "@/components/skeleton/AccountsPageSkeletion";
 
  
 
@@ -19,7 +21,8 @@ export  default async function AccountPage({searchParams,
   
 
   return (
-    
+    <Suspense fallback={<AccountsPageSkeletion/>}>
+
       <div className="grid  gap-6 ">
         <AddAccount status={status}/>
 
@@ -30,6 +33,7 @@ export  default async function AccountPage({searchParams,
           ))}
         </div>
       </div>
-     
+      </Suspense>
+
   );
 }
