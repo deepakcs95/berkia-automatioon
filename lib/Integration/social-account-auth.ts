@@ -2,14 +2,15 @@ import { SocialAccount } from '@prisma/client';
 import {z} from 'zod'
 import { updateRefreshToken } from '../db/instagram';
 import { log } from 'console';
-import { PostItem, PostItemResponse } from '../types';
+import {   PostItemResponse } from '../types';
 
 const InstagramUserSchema = z.object({
-  userId: z.string(),
-  userName: z.string(),
-  profilePictureUrl: z.string().optional(),
+  user_id: z.string(),
+  username: z.string(),
+  profile_picture_url: z.string().optional(),
 })
 
+ 
 export type InstagramUser = z.infer<typeof InstagramUserSchema>
  
 
