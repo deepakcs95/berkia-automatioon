@@ -44,7 +44,7 @@ export function AppSidebarHeader() {
             { user && (
                 <>
                 <span className="truncate font-semibold">{user?.name}</span>
-                <span className="truncate text-xs">{user?.subscriptionPlan?.plan.plan}</span>
+                <span className="truncate text-xs">{user?.subscription?.plan.name}</span>
                 </>
             )}
           </div>

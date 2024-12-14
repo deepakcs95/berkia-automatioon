@@ -8,7 +8,7 @@ import { SocialConnectionStatus, SocialType } from '@prisma/client';
 
 export async function saveInstagramAccount(userId: string,instagramUser : InstagramUserResponseType,accesToken: string) {
 
-  if(!instagramUser || !accesToken || !userId) {
+  if(!instagramUser.user_id || !accesToken || !userId) {
     console.log(' Instagram account not saved missing data ,', instagramUser,accesToken,userId);
     return null;}
 
