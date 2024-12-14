@@ -16,17 +16,20 @@ export async function connect(code: string) {
   }
 
 
-const getCachedAccounts = unstable_cache(
-  async (userId: string) => {
-     const result = await getInstagramAccountsByUserId(userId  );
-     return result;
-  },
-  ['instagram-accounts'],
-  {
-    tags: ['instagram-accounts'],
-revalidate: 3600
-   }
- ); 
+  export const getCachedAccounts = unstable_cache(
+    async (userId: string) => {
+      console.log('cache miss getting instagram accounts');
+      const result = await getInstagramAccountsByUserId(userId);
+      return result;
+    },
+    // Include userId in the cache key to make it unique per user
+    [`instagram-accounts`],
+    {
+      tags: ['instagram-accounts'],
+      revalidate: 3600, // Cache for 1 hour
+      
+     }
+  );
 
 
 export async function connectInstagramAccount(  

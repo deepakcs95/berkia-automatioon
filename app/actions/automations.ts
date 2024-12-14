@@ -82,20 +82,21 @@ export async function deleteAutomationAction(automation_id: string) {
 export async function getAllSocialAccountAndAutomations() {
   const id = await getAuthSession();
   return unstable_cache(
-    async (userId: string) => {
+    async (id: string) => {
+      console.log("cache miss getAllSocialAccountAndAutomations, " ,id);
+      
       try {
-        const automations = await getAllSocialAccountWithAutomations(userId);
+        const automations = await getAllSocialAccountWithAutomations(id);
         if(!automations) return {status:404,automations:null, message:"No Instagram accounts found"};
         return {status:200,automations, message:"Instagram accounts fetched successfully"};
       } catch (error) {
         return {status:500,automations:null, message:"An error occurred please try again"};
       }
     },
-    ['automations', id],
+    ['automations'],
     { 
       tags: ['automations'],
-revalidate: 3600
-       
+      revalidate: 3600, // Revalidate every hour
     }
   )(id);
 }

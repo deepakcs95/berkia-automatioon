@@ -8,8 +8,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       console.log("User signed in:", user);
-      await onboardUser(user);
-      return true;
+      try {
+         await onboardUser(user);
+        return true;
+      } catch (error) {
+        console.error("Error during onboarding:", error);
+        return false;
+      }
     },
     jwt({ token, user }) {
       if (user) {

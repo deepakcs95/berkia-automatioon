@@ -1,11 +1,15 @@
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "./_components/app-sidebar";
+import { AppSidebar } from "./_components/AppSideBar";
 import { Separator } from "@/components/ui/separator";
-import BreadcrumbNavigation from "./_components/bread-crumb-navigation";
+import BreadcrumbNavigation from "./_components/BreadCrumpNav";
 import { memo } from "react";
+ 
 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+
+
   return (
     <div className="flex h-screen overflow-y-scroll">
       <SidebarProvider>

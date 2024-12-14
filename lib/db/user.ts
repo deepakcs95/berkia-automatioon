@@ -3,10 +3,17 @@ import { User } from "next-auth";
 import { cache } from "react";
 import { generateIdFromEmail } from "@/lib/utils/utils";
 import { db } from "@/lib/db/prisma";
+import { SubscriptionPlanType } from "@prisma/client";
 
 export const onboardUser = async (user: User) => {
-  if (user.email) {
+  if (!user.email)    throw new Error("User email is null or undefined");
+  
     const existingUser = await getUserByEmail(user.email);
+    const freePlan = await findSubscriptionPlan(SubscriptionPlanType.FREE)
+
+    if(!freePlan){
+      throw new Error("Free plan not found");
+    }
 
     if (!existingUser) {
       await db.user.create({
@@ -15,17 +22,39 @@ export const onboardUser = async (user: User) => {
           email: user.email,
           name: user.name,
           image: user.image,
+           subscriptionPlan: {
+            create: {
+               
+              status:"ACTIVE",
+              startDate:new Date(),
+              endDate:new Date(new Date().setFullYear(new Date().getFullYear() + 1)), 
+              plan:{
+                connect: {
+                  plan: SubscriptionPlanType.FREE
+                }
+              }
+            }
+          }
         },
       });
       console.log("User created");
     }
-  } else {
-    console.error("User email is null or undefined");
-  }
+   
 };
 
 export const getUserByEmail = cache(async (email: string) => {
   return await db.user.findUnique({ where: { email } });
 });
 
- 
+export const findSubscriptionPlan = cache(async (plan: SubscriptionPlanType) => {
+  return await db.subscriptionPlan.findUnique({ where: { plan } });
+});
+
+export const getUserByIdWithSubscription = cache(async (id: string) => {
+  return await db.user.findUnique({ where: { id },include: { subscriptionPlan: {
+    include: {
+      plan: true
+    }
+  } } });
+});
+
