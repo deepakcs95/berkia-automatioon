@@ -70,17 +70,22 @@ function extractWebhookContent(webhook: ProcessedWebhook): {
 
 export const executeAction = async (webhook: ProcessedWebhook,action: Action, accessToken: string) => {
 
+   try{
     switch(action.type) {
       case 'COMMENT_REPLY':
-        sendReply(webhook.id, action.content,   accessToken);
+        await sendReply(webhook.id, action.content,   accessToken);
         break;
       case 'MESSAGE_REPLY':
-        if(webhook.type === TriggerType.COMMENT){sendMessageForComment(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken)}
-       else {sendMessageForMessage(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken);}
+        if(webhook.type === TriggerType.COMMENT){await sendMessageForComment(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken)}
+       else {await sendMessageForMessage(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken);}
         break;
       default:
         console.warn('Unhandled action type', { actionType: action.type });
+    }}
+    catch(error) {
+      console.error('Error executing action:', error);
     }
+   
 
 }
 

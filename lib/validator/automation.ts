@@ -1,4 +1,4 @@
-import { Prisma, TriggerType } from '@prisma/client';
+import { ActionType, Prisma, TriggerType } from '@prisma/client';
 import { z } from 'zod';
   
  
@@ -75,14 +75,14 @@ export const AutomationValidator = z.object({
   actions: z.array(
     z.object({
       id: z.string().uuid(),
-      type: z.enum(['commentReply', 'messageReply']),
+      type: z.enum([ActionType.COMMENT_REPLY, ActionType.MESSAGE_REPLY]),
       content: z.string().min(1, "Action content is required"),
       automationId: z.string().uuid(),
     })
   ),
   triggers: z.object({
     id: z.string().uuid(),
-    type: z.enum(['comment', 'message']),
+    type: z.enum([TriggerType.COMMENT, TriggerType.MESSAGE]),
     keyword: z.string().min(1, "Trigger keyword is required"),
     automationId: z.string().uuid(),
   }),

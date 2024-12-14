@@ -60,6 +60,7 @@ export default function AutomationForm({
 
 
       const onsubSubmit = handleSubmit((data) => {
+        console.log(data);
         
         onSubmit(data,automation!)
       })
@@ -180,7 +181,7 @@ export default function AutomationForm({
           <div>
             <label className="text-sm font-medium mb-1 block">Response with Comment</label>
             <Input
-              disabled={trigger_type.trim() === 'message'}
+              disabled={trigger_type === 'MESSAGE'}
               
               placeholder="Enter your response"
               {...register('commentAction')}
@@ -206,7 +207,7 @@ export default function AutomationForm({
         </AutomationFormSection>
 
         {/* Post Selector */}
-        {trigger_type.trim() === 'comment' && (
+        {trigger_type === 'COMMENT' && (
           <AutomationFormSection
           className='md:col-span-2'
             title="Apply to posts"
