@@ -20,6 +20,7 @@ import { instagramAuthUrl } from "./AddAccount";
 import { SocialAccountType } from "@/lib/db/automations";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import SubmitButton from "@/components/ui/SubmitButton";
 
  
 export function AccountCard({ account }: { account: SocialAccountType }) {
@@ -35,6 +36,7 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
       const result = await disconnectInstagramAccount(account.accountId);
 
       if (result?.success) {
+        router.refresh();
         toast.success("success");
       } else {
         toast.error(result?.message || "Failed Please try again");
@@ -110,41 +112,36 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between border-t pt-6">
-        {account.status === "CONNECTED" ? (
-          <Button
-            variant="outline"
+         {account.status === "CONNECTED" ? (
+          <SubmitButton
+            variant="destructive"
             onClick={handleConnectionOfAccount}
-            disabled={isLoading}
-            className="hover:bg-primary/5"
-          >
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Disconnect"}
-          </Button>
+            isLoading={isLoading}
+           >
+            Disconnect
+          </SubmitButton>
         ) : (
-          <Button
+          <SubmitButton
             variant="outline"
             onClick={() => {
               setIsLoading(true);
               router.push(instagramAuthUrl);
             }}
-            disabled={isLoading}
-            className="hover:bg-primary/5"
-          >
+            isLoading={isLoading}
+           >
             Connect
-          </Button>
+          </SubmitButton>
         )}
-        <Button
+        <SubmitButton
           variant="ghost"
-          size="icon"
-          disabled={isDeleting}
+           isLoading={isDeleting}
           onClick={handleDeleteInstagramAccount}
           className="text-red-500 hover:text-red-600 hover:bg-red-50"
         >
-          {isDeleting ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
+         
             <Trash2 className="h-4 w-4" />
-          )}
-        </Button>
+           
+        </SubmitButton>
       </CardFooter>
     </Card>
   );

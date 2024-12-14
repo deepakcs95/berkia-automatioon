@@ -80,8 +80,6 @@ export async function deleteConnectedInstagramAccount(accountId: string) {
       return { success: false, error: "Instagram account not found" };
     }
 
-
-
     await db.socialAccount.delete({ where: { id: accountToDelete.id } });
     console.log('✅ Instagram account deleted successfully ');
     revalidateTag('instagram-accounts');
@@ -128,9 +126,9 @@ export async function disconnectInstagramAccount(accountId: string) {
           tokenExpiresAt: null
         }
       });
-  
+      revalidateTag('instagram-accounts');
+      revalidatePath('/dashboard/account');
       console.log('✅ Instagram account disconnected successfully');
-revalidateTag('instagram-accounts');
 
       return { 
         success: true, 
@@ -143,10 +141,6 @@ revalidateTag('instagram-accounts');
         success: false, 
         message: "An error occurred please try again" 
       };
-    }finally{
-revalidateTag('instagram-accounts');
-        
-        revalidatePath('/dashboard/account');
     }
   }
 

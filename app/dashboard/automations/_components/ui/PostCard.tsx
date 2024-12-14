@@ -16,9 +16,9 @@ interface PostCardProps {
 const areEqual = (prevProps: PostCardProps, nextProps: PostCardProps) => {
   return (
     prevProps.post.id === nextProps.post.id &&
-    prevProps.post.mediaUrl === nextProps.post.mediaUrl &&
-    prevProps.post.mediaType === nextProps.post.mediaType &&
-    prevProps.post.thumbnailUrl === nextProps.post.thumbnailUrl &&
+    prevProps.post.media_url === nextProps.post.media_url &&
+    prevProps.post.media_type === nextProps.post.media_type &&
+    prevProps.post.thumbnail_url === nextProps.post.thumbnail_url &&
     prevProps.fields === nextProps.fields
   );
 };
@@ -44,7 +44,7 @@ const PostCard = ({ post, fields  }: PostCardProps) => {
       className="group relative aspect-square cursor-pointer"
     >
       <Image
-        src={post.mediaType === 'VIDEO' ? post.thumbnailUrl! : post.mediaUrl}
+        src={post.media_type === 'VIDEO' ? post.thumbnail_url! : post.media_url}
         alt={  "Instagram post"}
         className="object-cover"
         sizes="(max-width: 80px) 80px, 80px"

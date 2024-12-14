@@ -50,7 +50,7 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
       getInstagramPostsByAccountId(
         postaccountId || '',
         pageParam,
-        2
+       3
       ),
     getNextPageParam: (lastPage) => lastPage?.nextCursor || null  ,
     initialPageParam: "",
@@ -107,7 +107,7 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
         
         <CommandDialog open={open} onOpenChange={setOpen} >
           <DialogTitle className='sr-only'>Posts</DialogTitle>
-      <CommandList className='max-h-[300px] overflow-y-auto m-2 rounded-sm' onScroll={onScroll}>
+      <CommandList className='max-h-[150px] overflow-y-auto m-2 rounded-sm' onScroll={onScroll}>
         <CommandGroup      >
         {isPending ? (
                 <CommandItem disabled className="flex items-center justify-center py-4">

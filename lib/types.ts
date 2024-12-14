@@ -2,9 +2,9 @@ import {  Prisma} from "@prisma/client";
 
 export type PostItem = {
     id: string;
-    mediaUrl: string;
-    mediaType: "VIDEO" | "IMAGE" | "CAROUSEL_ALBUM";
-    thumbnailUrl?: string;
+    media_url: string;
+    media_type: "VIDEO" | "IMAGE" | "CAROUSEL_ALBUM";
+    thumbnail_url?: string;
 };
 
 export type PostItemResponse = {
