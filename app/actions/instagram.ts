@@ -24,6 +24,7 @@ const getCachedAccounts = unstable_cache(
   ['instagram-accounts'],
   {
     tags: ['instagram-accounts'],
+{revalidate: 3600}
    }
  ); 
 
