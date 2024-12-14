@@ -4,14 +4,14 @@ import { updateRefreshToken } from '../db/instagram';
 import { log } from 'console';
 import {   PostItemResponse } from '../types';
 
-const InstagramUserSchema = z.object({
+const InstagramUserResponseSchema = z.object({
   user_id: z.string(),
   username: z.string(),
   profile_picture_url: z.string().optional(),
 })
 
  
-export type InstagramUser = z.infer<typeof InstagramUserSchema>
+export type InstagramUserResponseType = z.infer<typeof InstagramUserResponseSchema>
  
 
 export async function  getInstagramToken(code: string) {
@@ -97,7 +97,7 @@ export async function getInstagramUser(accessToken: string) {
 
  
     // Validate the response
-    const userSchema = InstagramUserSchema.safeParse(userData);
+    const userSchema = InstagramUserResponseSchema.safeParse(userData);
     if (!userSchema.success) {
       throw new Error('Invalid Instagram user response');
     }

@@ -1,12 +1,12 @@
 'server only'
 
 import { cache } from 'react';
-import { InstagramUser } from '../Integration/social-account-auth';
+import { InstagramUserResponseType } from '../Integration/social-account-auth';
 import { db } from '@/lib/db/prisma'; 
 import { SocialConnectionStatus, SocialType } from '@prisma/client';
 
 
-export async function saveInstagramAccount(userId: string,instagramUser : InstagramUser,accesToken: string) {
+export async function saveInstagramAccount(userId: string,instagramUser : InstagramUserResponseType,accesToken: string) {
 
   if(!instagramUser || !accesToken || !userId) {
     console.log(' Instagram account not saved missing data');
@@ -14,7 +14,7 @@ export async function saveInstagramAccount(userId: string,instagramUser : Instag
 
    const existingAccount = await db.socialAccount.findFirst({
         where: {
-            accountId: instagramUser.userId,
+            accountId: instagramUser.user_id,
             userId,
             socialType: SocialType.INSTAGRAM,
       }});
@@ -25,12 +25,12 @@ export async function saveInstagramAccount(userId: string,instagramUser : Instag
             id: existingAccount.id,
           },
           data: {
-            username: instagramUser.userName,
-            accountId: instagramUser.userId,
+            username: instagramUser.username,
+            accountId: instagramUser.user_id,
             accessToken: accesToken,
             tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
             status: SocialConnectionStatus.CONNECTED,
-            profilePictureUrl: instagramUser.profilePictureUrl || '',
+            profilePictureUrl: instagramUser.profile_picture_url || '',
           },
         });
 
@@ -41,10 +41,10 @@ export async function saveInstagramAccount(userId: string,instagramUser : Instag
           data: {
               userId,
             socialType: SocialType.INSTAGRAM,
-            username: instagramUser.userName,
-            profilePictureUrl: instagramUser.profilePictureUrl || '',
+            username: instagramUser.username,
+            profilePictureUrl: instagramUser.profile_picture_url || '',
             status: SocialConnectionStatus.CONNECTED,
-            accountId: instagramUser.userId,
+            accountId: instagramUser.user_id,
             accessToken: accesToken,
             tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
           },
