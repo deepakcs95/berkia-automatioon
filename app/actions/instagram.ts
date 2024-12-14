@@ -54,8 +54,8 @@ if(!session?.user) return redirect('/sign-in');
         return {success: true , account}
       }
     } catch (error) {
-        
-        return {success: false, error}
+        console.error('❌ Error connecting Instagram account:', error);
+         return {success: false, error}
     }
 
     
