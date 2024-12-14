@@ -2,6 +2,8 @@ import { clsx, type ClassValue } from "clsx";
 import { createHash } from "crypto";
 import { twMerge } from "tailwind-merge";
 import { v5 as uuidv5 } from "uuid";
+import { auth } from "../auth";
+import { redirect } from "next/navigation";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -13,4 +15,10 @@ export function generateIdFromEmail(email: string) {
 }
 
 
- 
+export async function getAuthSession() {
+  const session = await auth();
+  if (!session || !session.user || !session.user.id) {
+    return  redirect("/sign-in" );
+  }
+  return session.user.id;
+}

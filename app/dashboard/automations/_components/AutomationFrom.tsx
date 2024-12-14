@@ -1,11 +1,11 @@
 
 
-import React, { useMemo }    from 'react'
+import   { useMemo ,useEffect}    from 'react'
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import Image from 'next/image'
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { AutomationsType } from '@/lib/types';
 import { SocialAccountArrayType } from '@/lib/db/automations'
 import { useForm, Controller   } from 'react-hook-form';
@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Textarea } from '@/components/ui/textarea'
 import { PostSelector } from './PostSelector'
 import { AutomationSchema, AutomationSchemaType } from '@/lib/validator/automation'
+import { ActionType, SocialConnectionStatus, TriggerType } from '@prisma/client'
 
 interface AutomationFormProps {
   accounts: SocialAccountArrayType
@@ -45,12 +46,12 @@ export default function AutomationForm({
         formState: { errors } 
       } = useForm<AutomationSchemaType>({
         defaultValues: {
-            account_Id: accounts.find(account => account.account_id === automation?.account_id)?.account_id || accounts[0]?.account_id || '',
-            trigger_type:automation?.triggers?.type || 'comment',
-            trigger_keyword: automation?.triggers?.keyword || '',
-            comment_action: automation?.actions?.find(action => action?.type === 'commentReply')?.content || '',
-            message_action: automation?.actions?.find(action => action?.type === 'messageReply')?.content || '',
-            selectedPosts: automation?.target_posts || []
+            accountId: accounts.find(account => account.accountId === automation?.accountId)?.accountId || accounts[0]?.accountId || '',
+            triggerType:automation?.triggers?.type || TriggerType.COMMENT,
+            triggerKeyword: automation?.triggers?.keyword || '',
+            commentAction: automation?.actions?.find(action => action?.type === ActionType.COMMENT_REPLY)?.content || '',
+            messageAction: automation?.actions?.find(action => action?.type === ActionType.MESSAGE_REPLY)?.content || '',
+            selectedPosts: automation?.targetPosts || []
         }
         ,resolver:zodResolver(AutomationSchema)
       });
@@ -63,14 +64,14 @@ export default function AutomationForm({
         onSubmit(data,automation!)
       })
 
-      const trigger_type = watch('trigger_type');
-      const trigger_keyword = watch('trigger_keyword');
+      const trigger_type = watch('triggerType');
+      const trigger_keyword = watch('triggerKeyword');
       const selectedPosts = watch('selectedPosts');
 
 
-      React.useEffect(() => {
-        if (trigger_type.trim() === 'message') {
-          setValue('comment_action', '');  
+      useEffect(() => {
+        if (trigger_type.trim() === TriggerType.MESSAGE) {
+          setValue('commentAction', '');  
         }
       }, [trigger_type, setValue]);
      
@@ -83,7 +84,7 @@ export default function AutomationForm({
         <div className="mb-4">
           <label className="text-sm font-medium mb-1 block">Select Account</label>
           <Controller 
-            name="account_Id"
+            name="accountId"
             control={control}
             render={({ field }) => (
           <Select
@@ -100,15 +101,15 @@ export default function AutomationForm({
             </SelectTrigger>
             <SelectContent>
               {accounts.map((account) => (
-                <SelectItem key={account.id} value={account.account_id}>
+                <SelectItem key={account.id} value={account.accountId}>
                   <div className="flex items-center justify-center gap-3">
-                    <Image src={account.profile_picture_url || ''} alt="Account" className="rounded-full" unoptimized   loading='lazy' quality={20} width={15} height={15} />
+                    <Image src={account.profilePictureUrl || ''} alt="Account" className="rounded-full" unoptimized   loading='lazy' quality={20} width={15} height={15} />
                     <p>@{account.username}</p>
                     
                      
                     <span  className={cn(
               "text-sm",
-              account.status === "CONNECTED" ? "text-green-500" : "text-red-500"
+              account.status === SocialConnectionStatus.CONNECTED ? "text-green-500" : "text-red-500"
             )} >●</span>
                   </div>
                 </SelectItem>
@@ -117,15 +118,15 @@ export default function AutomationForm({
           </Select>
         )}
           />
-          {errors.account_Id && (
+          {errors.accountId && (
         <p className="text-red-500 text-sm mt-1">
-          {errors.account_Id.message}
+          {errors.accountId.message}
         </p>
       )}
         </div>
 
         {/* Trigger */}
-        <div className={cn("grid   gap-4",automation?.triggers?.type === 'comment' ? 'md:grid-cols-3' : 'md:grid-cols-2')}>
+        <div className={cn("grid   gap-4",automation?.triggers?.type === TriggerType.COMMENT ? 'md:grid-cols-3' : 'md:grid-cols-2')}>
         <AutomationFormSection
           title="Trigger"
           description="When this happens..."
@@ -133,7 +134,7 @@ export default function AutomationForm({
           <div>
             <label className="text-sm font-medium mb-1 block">Type</label>
             <Controller 
-            name="trigger_type"
+            name="triggerType"
             control={control}
             render={({ field }) => (
             <Select
@@ -148,8 +149,8 @@ export default function AutomationForm({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="comment">Comment</SelectItem>
-                <SelectItem value="message">Message</SelectItem>
+                <SelectItem value={TriggerType.COMMENT}>Comment</SelectItem>
+                <SelectItem value={TriggerType.MESSAGE}>Message</SelectItem>
               </SelectContent>
             </Select>)}
             />
@@ -158,13 +159,13 @@ export default function AutomationForm({
             <label className="text-sm font-medium mb-1 block">Keyword</label>
             <Input
               placeholder="Enter trigger keyword"
-              {...register('trigger_keyword')}
+              {...register('triggerKeyword')}
                 
               value={trigger_keyword.replace(/\s+/g, '')}
             />
-            {errors.trigger_keyword && (
+            {errors.triggerKeyword && (
         <p className="text-red-500 text-sm mt-1">
-          {errors.trigger_keyword.message}
+          {errors.triggerKeyword.message}
         </p>
       )}
           </div>
@@ -182,24 +183,24 @@ export default function AutomationForm({
               disabled={trigger_type.trim() === 'message'}
               
               placeholder="Enter your response"
-              {...register('comment_action')}
+              {...register('commentAction')}
                
             />
-            {errors.comment_action && (
+            {errors.commentAction && (
         <p className="text-red-500 text-sm mt-1">
-          {errors.comment_action.message}
+          {errors.commentAction.message}
           </p>)}
           </div>
           <div>
             <label className="text-sm font-medium mb-1 block">Response with Message</label>
             <Textarea
               placeholder="Enter your response"
-              {...register('message_action')}
+              {...register('messageAction')}
               
             />
-            {errors.message_action && (
+            {errors.messageAction && (
                 <p className="text-red-500 text-sm mt-1">
-                  {errors.message_action.message}
+                  {errors.messageAction.message}
                   </p>)}
           </div>
         </AutomationFormSection>
@@ -221,7 +222,7 @@ export default function AutomationForm({
                 {...field,value:field.value as string[],
                    onChange:((newValue: string[]) => field.onChange(newValue))
                   }}
-                    postaccountId={accounts.find(account => account.account_id === automation?.account_id)?.account_id || accounts[0]?.account_id || ''}
+                    postaccountId={accounts.find(account => account.accountId === automation?.accountId)?.accountId || accounts[0]?.accountId || ''}
                      selectedPosts={selectedPosts || []}/>
             )}
             /> 

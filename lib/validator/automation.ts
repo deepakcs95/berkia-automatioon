@@ -1,52 +1,53 @@
+import { Prisma, TriggerType } from '@prisma/client';
 import { z } from 'zod';
   
  
 export const AutomationSchema = z.object({
-  account_Id: z.string().min(1, "Account ID is required"),
-  trigger_type: z.enum(['comment', 'message'], { 
+  accountId: z.string().min(1, "Account ID is required"),
+  triggerType: z.enum([TriggerType.COMMENT, TriggerType.MESSAGE], { 
     errorMap: () => ({ message: "Invalid trigger type" }) }),
-  trigger_keyword:z.string().min(1, "Trigger keyword is required").max(10, "Trigger keyword must be less than 10 characters"),
-  comment_action:z.string().max(30, "Comment action must be less than 30 characters").optional(),
-  message_action:z.string().max(100, "Message action must be less than 100 characters").optional(),
+  triggerKeyword: z.string().min(1, "Trigger keyword is required").max(10, "Trigger keyword must be less than 10 characters"),
+  commentAction: z.string().max(30, "Comment action must be less than 30 characters").optional(),
+  messageAction: z.string().max(100, "Message action must be less than 100 characters").optional(),
   selectedPosts: z.array(z.string()).optional()
 }).superRefine((state, ctx) => {
-  const { trigger_keyword, comment_action,message_action ,trigger_type,selectedPosts} = state;
+  const { triggerKeyword, commentAction, messageAction, triggerType, selectedPosts } = state;
 
   // Only validate if triggers exists
-  if (trigger_type && trigger_keyword) {
-    if (trigger_type === "comment") {
-      if (!comment_action && !message_action) {
+  if (triggerType && triggerKeyword) {
+    if (triggerType === TriggerType.COMMENT) {
+      if (!commentAction && !messageAction) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["comment_action"],
+          path: ["commentAction"],
           message: "At least one action must be set for comment trigger",
         }) 
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["message_action"],
+          path: ["messageAction"],
           message: "At least one action must be set for comment trigger",
         }) 
       }
-      if (!(selectedPosts &&selectedPosts?.length > 0)) {
+      if (!(selectedPosts && selectedPosts.length > 0)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["selectedPosts"],
           message: "At least one post must be selected for comment trigger",
         });
       }
-    } else if (trigger_type === "message") {
-      if (!message_action) {
+    } else if (triggerType === TriggerType.MESSAGE) {
+      if (!messageAction) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["message_action"],
+          path: ["messageAction"],
           message: "Message reply action must be set for message trigger",
         })
       }
       
-      if (comment_action   ) {
+      if (commentAction) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["comment_action"],
+          path: ["commentAction"],
           message: "Comment reply action cannot be set for message trigger",
         })
       }
@@ -55,14 +56,37 @@ export const AutomationSchema = z.object({
     // If no triggers are set, require them
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      path: ["trigger_type"],
+      path: ["triggerType"],
       message: "Trigger type must be set",
     });
   }
 });   
 
 export type AutomationSchemaType = z.infer<typeof AutomationSchema>
+ 
+export const AutomationValidator = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1, "Name is required"),
+  isActive: z.boolean(),
+  accountId: z.string().min(1, "Account ID is required"),
+  targetPosts: z.array(z.string()).optional(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  actions: z.array(
+    z.object({
+      id: z.string().uuid(),
+      type: z.enum(['commentReply', 'messageReply']),
+      content: z.string().min(1, "Action content is required"),
+      automationId: z.string().uuid(),
+    })
+  ),
+  triggers: z.object({
+    id: z.string().uuid(),
+    type: z.enum(['comment', 'message']),
+    keyword: z.string().min(1, "Trigger keyword is required"),
+    automationId: z.string().uuid(),
+  }),
+});
 
-
-
-
+ 
+export type AutomationValidatorType = z.infer<typeof AutomationValidator>

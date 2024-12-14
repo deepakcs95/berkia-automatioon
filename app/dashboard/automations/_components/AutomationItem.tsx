@@ -6,7 +6,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTrigger, AlertDialogFooter, AlertDialogTitle, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { MessageSquare, MessageCircle, ArrowRight, Trash2, Pencil,  ImagesIcon } from "lucide-react";
 import { AutomationsType } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
+import { ActionType, TriggerType } from "@prisma/client";
 // In automation-item.tsx
 interface AutomationItemProps {
     onEdit: (automation:AutomationsType) => void;
@@ -18,8 +19,8 @@ interface AutomationItemProps {
 
 const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: AutomationItemProps) => {
  
-  const commentActionIndex = automation.actions.findIndex((action) => action.type === 'commentReply');
-  const messageActionIndex = automation.actions.findIndex((action) => action.type === 'messageReply');
+  const commentActionIndex = automation.actions.findIndex((action) => action.type === ActionType.COMMENT_REPLY);
+  const messageActionIndex = automation.actions.findIndex((action) => action.type === ActionType.MESSAGE_REPLY);
  
   
   return (
@@ -35,7 +36,7 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-primary bg-primary/10">
-                {automation.triggers?.type === 'comment' ? 'Comment' : 'Message'}
+                {automation.triggers?.type === TriggerType.COMMENT ? 'Comment' : 'Message'}
               </Badge>
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
               <div className="grid place-items-center gap-2">
@@ -85,12 +86,12 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
               <div>
                 <h3 className="font-semibold">Action</h3>
                 <div className="grid place-items-center gap-2">
-                  {commentActionIndex !== -1 && automation.actions[commentActionIndex].type === "commentReply" && (
+                  {commentActionIndex !== -1 && automation.actions[commentActionIndex].type === ActionType.COMMENT_REPLY && (
                     <p className="text-sm text-muted-foreground text-clip max-w-[20ch] truncate">
                       Comment Reply - {automation.actions[commentActionIndex]?.content}
                     </p>
                   )}
-                  {messageActionIndex !== -1 && automation.actions[messageActionIndex].type === "messageReply" && (
+                  {messageActionIndex !== -1 && automation.actions[messageActionIndex].type === ActionType.MESSAGE_REPLY && (
                     <p className="text-sm text-muted-foreground text-clip max-w-[20ch] truncate">
                       Message Reply - {automation.actions[messageActionIndex]?.content}
                     </p>
@@ -99,7 +100,7 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
               </div>
             </div>
 
-            {automation.target_posts && automation.target_posts.length > 0 && (
+            {automation.targetPosts && automation.targetPosts.length > 0 && (
               <div className="flex items-center space-x-4">
                 <div className="flex-shrink-0">
                   <ImagesIcon className="h-6 w-6 text-primary" />
@@ -107,7 +108,7 @@ const  AutomationItem = memo(({ onEdit, onDelete, automation, isPending }: Autom
                 <div>
                   <h3 className="font-semibold">Applied Posts</h3>
                   <p className="text-sm text-muted-foreground">
-                    Applied to {automation.target_posts.length} post{automation.target_posts.length > 1 ? 's' : ''}
+                    Applied to {automation.targetPosts.length} post{automation.targetPosts.length > 1 ? 's' : ''}
                   </p>
                 </div>
               </div>

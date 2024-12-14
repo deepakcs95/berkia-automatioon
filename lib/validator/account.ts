@@ -22,14 +22,14 @@ export async function validateUserCredits(user: User): Promise<PlanValidationRes
 }
 
 export async function validateSocialToken(account: SocialAccount): Promise<PlanValidationResult> {
-  if (!account.access_token) {
+  if (!account.accessToken) {
     return {
       isValid: false,
       error: 'No access token found for social account'
     };
   }
 
-  if (account.token_expires_at && account.token_expires_at < new Date()) {
+  if (account.tokenExpiresAt && account.tokenExpiresAt < new Date()) {
     return {
       isValid: false,
       error: 'Social account token has expired'

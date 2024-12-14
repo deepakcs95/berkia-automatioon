@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { PostItem } from "@/lib/types";
 import { memo, useMemo } from "react";
 
@@ -16,9 +16,9 @@ interface PostCardProps {
 const areEqual = (prevProps: PostCardProps, nextProps: PostCardProps) => {
   return (
     prevProps.post.id === nextProps.post.id &&
-    prevProps.post.media_url === nextProps.post.media_url &&
-    prevProps.post.media_type === nextProps.post.media_type &&
-    prevProps.post.thumbnail_url === nextProps.post.thumbnail_url &&
+    prevProps.post.mediaUrl === nextProps.post.mediaUrl &&
+    prevProps.post.mediaType === nextProps.post.mediaType &&
+    prevProps.post.thumbnailUrl === nextProps.post.thumbnailUrl &&
     prevProps.fields === nextProps.fields
   );
 };
@@ -30,8 +30,8 @@ const PostCard = ({ post, fields  }: PostCardProps) => {
   const handlePostToggle = (postId: string) => {
     const currentValue = fields.value || [];
     const newValue = isSelected
-      ? currentValue.filter(id => id !== postId)  // Remove if exists
-      : [...currentValue, postId];  // Add if not exists
+      ? currentValue.filter(id => id !== postId)  
+      : [...currentValue, postId];   
   
     fields.onChange(newValue);
   };
@@ -44,7 +44,7 @@ const PostCard = ({ post, fields  }: PostCardProps) => {
       className="group relative aspect-square cursor-pointer"
     >
       <Image
-        src={post.media_type === 'VIDEO' ? post.thumbnail_url! : post.media_url}
+        src={post.mediaType === 'VIDEO' ? post.thumbnailUrl! : post.mediaUrl}
         alt={  "Instagram post"}
         className="object-cover"
         sizes="(max-width: 80px) 80px, 80px"

@@ -109,12 +109,12 @@ export default function AutomationsPage({
 
        
       {optimisticAccounts.length > 0 && (
-        <div className="mt-4">
+        <div  className="mt-4">
            {optimisticAccounts
       .filter(account => account.automations.length > 0)
       .map((account) => (
         <AccountList 
-          key={account.account_id} 
+          key={account.accountId} 
           account={account}
         >
           {account.automations.map((automation) => (

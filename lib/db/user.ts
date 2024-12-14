@@ -1,7 +1,7 @@
 "user server";
 import { User } from "next-auth";
 import { cache } from "react";
-import { generateIdFromEmail } from "@/lib/utils";
+import { generateIdFromEmail } from "@/lib/utils/utils";
 import { db } from "@/lib/db/prisma";
 
 export const onboardUser = async (user: User) => {

@@ -32,7 +32,7 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
     try {
       setIsLoading(true);
 
-      const result = await disconnectInstagramAccount(account.account_id);
+      const result = await disconnectInstagramAccount(account.accountId);
 
       if (result?.success) {
         toast.success("success");
@@ -52,7 +52,7 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
     try {
       setIsDeleting(true);
 
-      const result = await deleteConnectedInstagramAccount(account.account_id);
+      const result = await deleteConnectedInstagramAccount(account.accountId);
 
       if (result?.success) {
         toast.success("success");
@@ -79,9 +79,9 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
           <div className="flex items-center space-x-4">
             <div className="h-14 w-14 rounded-full flex items-center justify-center bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
               <div className="relative h-12 w-12 rounded-full bg-white flex items-center justify-center">
-                {account.profile_picture_url ? (
+                {account.profilePictureUrl ? (
                   <Image
-                    src={account.profile_picture_url}
+                    src={account.profilePictureUrl}
                     alt={account.username}
                     className="rounded-full object-cover"
                     sizes="(max-width: 50px) 50px"

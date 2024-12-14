@@ -1,5 +1,5 @@
 import { db } from "@/lib/db/prisma";
-import {   social_connection_status, trigger_type } from "@prisma/client";
+import {  SocialConnectionStatus, SocialType,TriggerType } from "@prisma/client";
  import { AutomationsType } from "../types";
 import { cache } from "react";
 
@@ -11,23 +11,23 @@ export const getAllSocialAccountWithAutomations =  async (userId: string) => {
    
     const automations = await db.socialAccount.findMany({
       where: {
-        user_id: userId,
+        userId: userId,
       },
       select: {
         id: true,
-        social_type: true,
+        socialType: true,
         username: true,
-        profile_picture_url: true,
+        profilePictureUrl: true,
         status: true,
-        account_id: true,
-        user_id: true,
+        accountId: true,
+        userId: true,
         automations:{
           include: {
             actions: true,
             triggers: true,
           },
           orderBy: {
-            created_at: "desc",
+            createdAt: "desc",
           },
         }
       },
@@ -47,33 +47,33 @@ export const createAutomation = async (userId: string, data: AutomationsType) =>
 
     const socialAccount = await db.socialAccount.findFirst({
       where: {
-        account_id: data.account_id,
-        user_id: userId,
+        accountId: data.accountId,
+        userId: userId,
       },
     });
  
     if (!socialAccount) {
       console.error(
-        `No social account found for user with id ${userId} and account id ${data.account_id} 🤔`
+        `No social account found for user with id ${userId} and account id ${data.accountId} 🤔`
       );
       throw new Error(`No social account found for the user `)
     }
 
-    data.account_id = socialAccount.id
+    data.accountId = socialAccount.id
 
       await db.automation.create({
       data : {
         id: data.id,
-        account_id: socialAccount.id,
+        accountId: socialAccount.id,
         name: data.name,
         isActive: data.isActive,
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        target_posts: data.target_posts,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        targetPosts: data.targetPosts,
         triggers: data.triggers ? {
           create: {
               id: data.triggers?.id ,
-              type: data.triggers?.type || trigger_type.comment,
+              type: data.triggers?.type || TriggerType.COMMENT,
               keyword: data.triggers?.keyword || '',
             },
         } : undefined,
@@ -107,14 +107,14 @@ export const updateAutomation = async (userId: string, data: AutomationsType) =>
 
     const socialAccount = await db.socialAccount.findFirst({
       where: {
-        account_id: data.account_id,
-        user_id: userId,
+        accountId: data.accountId,
+        userId: userId,
       },
     });
  
     if (!socialAccount) {
       console.error(
-        `No social account found for user with id ${userId} and account id ${data.account_id} 🤔`
+        `No social account found for user with id ${userId} and account id ${data.accountId} 🤔`
       );
       throw new Error(`No social account found for the user `)
     }
@@ -130,7 +130,7 @@ export const updateAutomation = async (userId: string, data: AutomationsType) =>
     }
 
 
-    data.account_id = socialAccount.id
+    data.accountId = socialAccount.id
 
     const updatedAutomation = await db.$transaction(async (transaction) => {
       
@@ -139,8 +139,8 @@ export const updateAutomation = async (userId: string, data: AutomationsType) =>
         data: {
           name: data.name,
           isActive: data.isActive,
-          updated_at: new Date(),
-          target_posts: data.target_posts,
+          updatedAt: new Date(),
+          targetPosts: data.targetPosts,
           actions: {
             deleteMany: {},  
             create: data.actions.map((action) => ({
@@ -171,7 +171,7 @@ export const updateAutomation = async (userId: string, data: AutomationsType) =>
               id: data.triggers.id,
               type: data.triggers.type,
               keyword: data.triggers.keyword,
-              automation_id: data.id,
+              automationId: data.id,
             },
           });
         }
@@ -210,7 +210,7 @@ export const deleteAutomation = async ( automationId: string) => {
   }
 };
 
-export const  findTriggerAndAssociatedAutomation = cache(async ({type, keyword}: {type:trigger_type, keyword: string}) => {
+export const  findTriggerAndAssociatedAutomation = cache(async ({type, keyword}: {type:TriggerType, keyword: string}) => {
   return   await db.trigger.findMany({
      where: {
        type: type,
@@ -220,7 +220,7 @@ export const  findTriggerAndAssociatedAutomation = cache(async ({type, keyword}:
        automation: {
          isActive: true,
          account: {
-           status: social_connection_status.CONNECTED
+           status: SocialConnectionStatus.CONNECTED
          }
        }
      },

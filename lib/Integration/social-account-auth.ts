@@ -5,9 +5,9 @@ import { log } from 'console';
 import { PostItem, PostItemResponse } from '../types';
 
 const InstagramUserSchema = z.object({
-  user_id: z.string(),
-  username: z.string(),
-  profile_picture_url: z.string().optional(),
+  userId: z.string(),
+  userName: z.string(),
+  profilePictureUrl: z.string().optional(),
 })
 
 export type InstagramUser = z.infer<typeof InstagramUserSchema>
@@ -112,26 +112,26 @@ export async function getInstagramUser(accessToken: string) {
 
 export async function validateInstagramToken(account:SocialAccount): Promise<SocialAccount | null> {
 
-const {access_token, token_expires_at} = account
+const {accessToken, tokenExpiresAt} = account
 
-  if (!access_token || !token_expires_at) {
+  if (!accessToken || !tokenExpiresAt) {
     console.log('❌ Instagram token/token_expires_at is missing');
     return  null;
   }
 
-  if(isTokenExpiringSoon(token_expires_at))  {
+  if(isTokenExpiringSoon(tokenExpiresAt))  {
     try {
-     const refreshedToken = await refreshToken(access_token)
+     const refreshedToken = await refreshToken(accessToken)
      
   // "access_token":"{long-lived-user-access-token}",
   // "token_type": "bearer",
   // "expires_in": 5183944  // Number of seconds until token expires
  
       if(refreshedToken.access_token) {
-        account.access_token = refreshedToken.access_token
-        account.token_expires_at =  new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
+        account.accessToken = refreshedToken.access_token
+        account.tokenExpiresAt =  new Date(Date.now() + 60 * 24 * 60 * 60 * 1000)
         account.status =  'CONNECTED'
-        await updateRefreshToken(account.id, refreshedToken.access_token, account.token_expires_at ,account.status)
+        await updateRefreshToken(account.id, refreshedToken.access_token, account.tokenExpiresAt ,account.status)
         log('✅ Instagram token refreshed successfully')
         return account
       }
@@ -148,6 +148,7 @@ const {access_token, token_expires_at} = account
 }
 
 export async function getInstagramPosts(access_token: string, cursor?: string, limit: number = 2) {
+  console.log('📝 Sending Instagram posts request');
   
   const posts = await fetch(
     `https://graph.instagram.com/me/media?fields=id,media_url,media_type,thumbnail_url&access_token=${access_token}&limit=${limit}${cursor ? `&after=${cursor}` : ''}`

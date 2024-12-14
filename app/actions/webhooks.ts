@@ -2,7 +2,7 @@ import { findTriggerAndAssociatedAutomation } from "@/lib/db/automations";
 import { validateInstagramToken } from "@/lib/Integration/social-account-auth";
 import {      ProcessedWebhook } from "@/lib/utils/webhook"
 import { validateUserPlan } from "@/lib/validator/account";
-import { Action,   trigger_type } from "@prisma/client";
+import { Action,   TriggerType } from "@prisma/client";
  
 
 
@@ -22,7 +22,7 @@ export const processWebhook = async (webhook: ProcessedWebhook) => {
     throw new Error('No content found in webhook');
   }
 
- const data = await findTriggerAndAssociatedAutomation({ type: type === 'comment' ? trigger_type.comment : trigger_type.message, keyword: content}) 
+ const data = await findTriggerAndAssociatedAutomation({ type: type === 'COMMENT' ? TriggerType.COMMENT : TriggerType.MESSAGE, keyword: content}) 
 
  if (!data.length) {
   console.log('No matching triggers found');
@@ -39,7 +39,7 @@ export const processWebhook = async (webhook: ProcessedWebhook) => {
 
     for(const account of data ){
       for(const action of account.automation.actions) {
-        await executeAction(webhook,action,account.automation.account.access_token || '')
+        await executeAction(webhook,action,account.automation.account.accessToken || '')
       }
     }
      
@@ -51,17 +51,17 @@ export const processWebhook = async (webhook: ProcessedWebhook) => {
 
 
 function extractWebhookContent(webhook: ProcessedWebhook): {
-  type: trigger_type;
+  type: TriggerType;
   content: string | undefined;
 } {
-  if (webhook.type === trigger_type.comment) {
+  if (webhook.type === TriggerType.COMMENT) {
     return {
-      type: trigger_type.comment,
+      type: TriggerType.COMMENT,
       content: webhook.content
     };
   } else {
     return {
-      type: trigger_type.message,
+      type: TriggerType.MESSAGE,
       content: webhook.content
     };
   }
@@ -71,11 +71,11 @@ function extractWebhookContent(webhook: ProcessedWebhook): {
 export const executeAction = async (webhook: ProcessedWebhook,action: Action, accessToken: string) => {
 
     switch(action.type) {
-      case 'commentReply':
+      case 'COMMENT_REPLY':
         sendReply(webhook.id, action.content,   accessToken);
         break;
-      case 'messageReply':
-        if(webhook.type === 'comment'){sendMessageForComment(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken)}
+      case 'MESSAGE_REPLY':
+        if(webhook.type === TriggerType.COMMENT){sendMessageForComment(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken)}
        else {sendMessageForMessage(webhook.sender_id, webhook.recipient_id || '',action.content,  accessToken);}
         break;
       default:

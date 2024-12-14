@@ -5,7 +5,6 @@ import { getAllDetailsOfInstagramAccountsByUserId, getInstagramAccountsByUserId,
 import { db } from "@/lib/db/prisma";
 import { getInstagramPosts, getInstagramToken, getInstagramUser, getLongLivedToken, validateInstagramToken } from "@/lib/Integration/social-account-auth";
 import { SocialAccount } from "@prisma/client";
-import next from "next";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -60,7 +59,7 @@ if(!session?.user) return redirect('/sign-in');
 }
 
 
-export async function deleteConnectedInstagramAccount(account_id: string) {
+export async function deleteConnectedInstagramAccount(accountId: string) {
 
     const session = await auth();
   
@@ -69,7 +68,7 @@ export async function deleteConnectedInstagramAccount(account_id: string) {
   try {
     const accounts = await getCachedAccounts(session.user.id);
     const accountToDelete = accounts.find(
-      (account) => account.account_id === account_id
+      (account) => account.accountId === accountId
     );
 
 
@@ -80,19 +79,19 @@ export async function deleteConnectedInstagramAccount(account_id: string) {
     await db.socialAccount.delete({ where: { id: accountToDelete.id } });
     console.log('✅ Instagram account deleted successfully ');
     revalidateTag('instagram-accounts');
-    redirect('/dashboard/account');
+    revalidatePath('/dashboard/account');
     return { success: true, message: "Instagram account deleted successfully" };
   } catch (error) {
     console.error('❌ Error deleting Instagram account:', error);  
       return {success: false,message: "An error occurred please try again"}
   }  
   finally{
-    redirect('/dashboard/account');
+    revalidatePath('/dashboard/account');
   }
 }
 
 
-export async function disconnectInstagramAccount(account_id: string) {
+export async function disconnectInstagramAccount(accountId: string) {
     const session = await auth();
   
     if (!session?.user?.id) return { success: false, error: "Unauthorized" };
@@ -101,7 +100,7 @@ export async function disconnectInstagramAccount(account_id: string) {
       // First, find the specific Instagram account with the given account_id
       const accounts = await getCachedAccounts(session.user.id);
       const accountToDisconnect = accounts.find(
-        (account) => account.account_id === account_id
+        (account) => account.accountId === accountId
       );
   
 
@@ -118,8 +117,8 @@ export async function disconnectInstagramAccount(account_id: string) {
         where: { id: accountToDisconnect.id },
         data: { 
           status: 'DISCONNECTED',
-          access_token: null,
-          token_expires_at: null
+          accessToken: null,
+          tokenExpiresAt: null
         }
       });
   
@@ -139,7 +138,7 @@ revalidateTag('instagram-accounts');
       };
     }finally{
 
-        redirect('/dashboard/account');
+        revalidatePath('/dashboard/account');
     }
   }
 
@@ -177,9 +176,9 @@ revalidateTag('instagram-accounts');
   }
 
   try {
-  const accounts = await getCachedAccounts(session.user.id);
-
-  const account = accounts.find((account) => account.account_id === instgramAccountId);
+  const accounts = await getAllDetailsOfInstagramAccountsByUserId(session.user.id);
+ 
+  const account = accounts.find((account) => account.accountId === instgramAccountId);
 
   if (!account) {
     return { success: false, message: "Instagram account not found" };
@@ -189,13 +188,13 @@ revalidateTag('instagram-accounts');
     const validatedAccount = await  validateInstagramToken(account as SocialAccount);   
     
     if(!validatedAccount) {
-      revalidatePath('/');
-      return { success: false, message: "token is not valid" };
+      revalidateTag('instagram-accounts');
+       return { success: false, message: "token is not valid" };
 
     }
 
 
-    const data = await getInstagramPosts(validatedAccount.access_token || '', cursor, limit);
+    const data = await getInstagramPosts(validatedAccount.accessToken || '', cursor, limit);
 
     if (!data) {
       return { success: false, message: "Failed to fetch Instagram posts" };

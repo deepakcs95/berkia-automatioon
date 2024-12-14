@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import { onboardUser } from "@/lib/db/user";
-import { generateIdFromEmail } from "./utils";
+import { generateIdFromEmail } from "./utils/utils";
 import GitHub from "next-auth/providers/github";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [GitHub],

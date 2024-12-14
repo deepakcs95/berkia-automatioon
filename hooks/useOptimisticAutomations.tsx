@@ -28,7 +28,7 @@ export function useAutomationOptimistic(initialAccounts: SocialAccountArrayType)
   const addOptimisticAutomation = useCallback((accountId: string, automation: AutomationsType) => {
     const updatedAccounts = [...optimisticAccounts];
     const accountIndex = updatedAccounts.findIndex(
-      account => account.account_id === accountId
+      account => account.accountId === accountId
     );
 
     if (accountIndex !== -1) {
@@ -40,7 +40,7 @@ export function useAutomationOptimistic(initialAccounts: SocialAccountArrayType)
   const updateOptimisticAutomation = useCallback((accountId: string, automation: AutomationsType) => {
     const updatedAccounts = [...optimisticAccounts];
     const accountIndex = updatedAccounts.findIndex(
-      account => account.account_id === accountId
+      account => account.accountId === accountId
     );
 
     if (accountIndex !== -1) {
@@ -75,7 +75,7 @@ export function useAutomationOptimistic(initialAccounts: SocialAccountArrayType)
     setPendingAutomation(transformedAutomation.id);
 
     startTransition(() => {
-      addOptimisticAutomation(data.account_Id, transformedAutomation);
+      addOptimisticAutomation(data.accountId, transformedAutomation);
     });
 
     const success = await createNewAutomation(transformedAutomation);
@@ -94,7 +94,7 @@ export function useAutomationOptimistic(initialAccounts: SocialAccountArrayType)
     setPendingAutomation(transformedAutomation.id);
 
     startTransition(() => {
-      updateOptimisticAutomation(data.account_Id, transformedAutomation);
+      updateOptimisticAutomation(data.accountId, transformedAutomation);
     });
 
     const success = await updateAutomationAction(transformedAutomation);
@@ -112,7 +112,7 @@ export function useAutomationOptimistic(initialAccounts: SocialAccountArrayType)
 
   const handleDeleteAutomation = useCallback(async (automation: AutomationsType ) => {
    const automationId = automation.id;
-    const accountId = automation.account_id;
+    const accountId = automation.accountId;
     
     setPendingAutomation(automationId);
 
@@ -126,7 +126,7 @@ export function useAutomationOptimistic(initialAccounts: SocialAccountArrayType)
         toast.success(success.message);
       } else {
         toast.error(success.message);
-         const account = optimisticAccounts.find(acc => acc.account_id === accountId);
+         const account = optimisticAccounts.find(acc => acc.accountId === accountId);
         if (account) {
           const automation = account.automations.find(auto => auto.id === automationId);
           if (automation) {

@@ -1,5 +1,5 @@
 import { SocialAccountType } from '@/lib/db/automations';
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils/utils'
 import { SocialAccount } from '@prisma/client';
 import { Instagram } from 'lucide-react'
 import React from 'react'

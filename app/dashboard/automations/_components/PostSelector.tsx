@@ -5,11 +5,8 @@ import {   ChevronsUpDown } from 'lucide-react'
  
 import { Button } from '@/components/ui/button'
 import {
-  Command,
   CommandDialog,
-  CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from '@/components/ui/command'
@@ -21,8 +18,7 @@ import {
 import { getInstagramPostsByAccountId } from '@/app/actions/instagram'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import  PostCard from './ui/PostCard'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Dialog, DialogTitle } from '@radix-ui/react-dialog'
+import { DialogTitle } from '@radix-ui/react-dialog'
 
 
 interface PostSelectorProps {
