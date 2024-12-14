@@ -2,8 +2,8 @@
 
 import { ChevronsUpDown, LogOut } from "lucide-react";
 
- import {
-  DropdownMenu, 
+import {
+  DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -17,7 +17,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import UserInfo from "./UserInfo";
- 
+
 export function NavUser() {
   const { isMobile } = useSidebar();
 
@@ -29,8 +29,8 @@ export function NavUser() {
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >               <UserInfo />
-
+            >
+               <UserInfo />
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
@@ -41,8 +41,8 @@ export function NavUser() {
             sideOffset={4}
           >
             <DropdownMenuLabel className="p-0 font-normal">
-               <UserInfo />
-             </DropdownMenuLabel>
+              <UserInfo />
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
             <DropdownMenuItem>

@@ -7,19 +7,18 @@ import { Skeleton } from "@/components/ui/skeleton";
  
 
  
-export default async function UserInfo() {
-//  const [user, setUser]= useState( (async()=>await getUser() as User))
- 
+export default   function UserInfo() {
+  
 const {
-    status,
-    data: user,
-    error,
-    isFetching,
+     data: user,
+    
+     
   } = useQuery({
     queryKey: ['user'],
     queryFn: getUser,
   })
  
+  
 
 if(!user) return (
     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
