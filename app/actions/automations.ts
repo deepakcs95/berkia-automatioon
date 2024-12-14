@@ -94,7 +94,7 @@ export async function getAllSocialAccountAndAutomations() {
     ['automations', id],
     { 
       tags: ['automations'],
-{revalidate: 3600}
+revalidate: 3600
        
     }
   )(id);
