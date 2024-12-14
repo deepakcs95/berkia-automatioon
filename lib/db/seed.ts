@@ -4,48 +4,60 @@ const prisma = new PrismaClient()
 
 async function main() {
 
-
-  const subscriptionPlans = await prisma.subscriptionPlan.createMany({
+  await prisma.plan.deleteMany({})
+  const subscriptionPlans = await prisma.plan.createMany({
     data: [
       {
-        plan: 'FREE',
+        name: 'FREE',
         price: 0,
+        description: 'Free plan',
+        maxAccounts: 1,
+        maxComments: 5,
+        maxMessages: 5,
+        maxAutomations: 5,
+        features: {
+          1: 'it has 1 account',
+          2: 'it has 5 comments',
+          3: 'it has 5 messages',
+          4: 'it has 5 automations',
+        },
         creditLimit: 50,
+        duration: 365 // days
+       },
+       {
+        name: 'PREMIUM',
+        price: 29.99,
+        description: 'PREMIUM plan',
+        maxAccounts: 3,
+        maxComments: 50,
+        maxMessages: 50,
+        maxAutomations: 50,
         features: {
-          autoReply: false,
-          aiAssistant: false,
-          commentAutomation: false,
-          messageAutomation: false,
-          socialAccounts: 1
+          1: 'it has 3 accounts',
+          2: 'it has 50 comments',
+          3: 'it has 50 messages',
+          4: 'it has 50 automations',
         },
-        duration: 30 // days
-      },
-      {
-        plan: 'PREMIUM',
-        price: 9.99,
-        creditLimit: 250,
+        creditLimit: 100,
+        duration: 365 // days
+       },
+       {
+        name: 'PRO',
+        price: 99.99,
+        description: 'Professional plan',
+        maxAccounts: 5,
+        maxComments: 100,
+        maxMessages: 100,
+        maxAutomations: 100,
         features: {
-          autoReply: true,
-          aiAssistant: true,
-          commentAutomation: true,
-          messageAutomation: false,
-          socialAccounts: 2
+          1: 'it has 5 accounts',
+          2: 'it has 100 comments',
+          3: 'it has 100 messages',
         },
-        duration: 30 // days
-      },
-      {
-        plan: 'PRO',
-        price: 19.99,
-        creditLimit: 1000,
-        features: {
-          autoReply: true,
-          aiAssistant: true,
-          commentAutomation: true,
-          messageAutomation: true,
-          socialAccounts: 5
-        },
-        duration: 30 // days
-      }
+        creditLimit: 200,
+        duration: 365 // days
+       },
+        
     ],
     skipDuplicates: true
   })

@@ -9,20 +9,17 @@ export const onboardUser = async (user: User) => {
   if (!user.email)    throw new Error("User email is null or undefined");
   
     const existingUser = await getUserByEmail(user.email);
-    const freePlan = await findSubscriptionPlan(SubscriptionPlanType.FREE)
 
-    if(!freePlan){
-      throw new Error("Free plan not found");
-    }
-
+    
     if (!existingUser) {
+      
       await db.user.create({
         data: {
           id: generateIdFromEmail(user.email),
           email: user.email,
           name: user.name,
           image: user.image,
-           subscriptionPlan: {
+           subscription: {
             create: {
                
               status:"ACTIVE",
@@ -30,7 +27,7 @@ export const onboardUser = async (user: User) => {
               endDate:new Date(new Date().setFullYear(new Date().getFullYear() + 1)), 
               plan:{
                 connect: {
-                  plan: SubscriptionPlanType.FREE
+                  name: SubscriptionPlanType.FREE
                 }
               }
             }
@@ -47,11 +44,11 @@ export const getUserByEmail = cache(async (email: string) => {
 });
 
 export const findSubscriptionPlan = cache(async (plan: SubscriptionPlanType) => {
-  return await db.subscriptionPlan.findUnique({ where: { plan } });
+  return await db.plan.findUnique({ where: { name: plan } });
 });
 
 export const getUserByIdWithSubscription = cache(async (id: string) => {
-  return await db.user.findUnique({ where: { id },include: { subscriptionPlan: {
+  return await db.user.findUnique({ where: { id },include: { subscription: {
     include: {
       plan: true
     }

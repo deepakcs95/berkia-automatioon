@@ -104,7 +104,7 @@ export async function getInstagramUser(accessToken: string) {
 
     
     console.log('📝 Received Instagram user details response' , userData);
-    return userData;
+    return userData as InstagramUserResponseType
    
 }
 
