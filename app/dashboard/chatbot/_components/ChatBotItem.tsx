@@ -22,22 +22,23 @@ export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
   const { accounts,handleEdit } = useChatbot();
 
   const chatBot = useMemo(()=>accounts[accountIndex]?.chatbot, [accounts, accountIndex]);
-
-    if(!chatBot) return null;
-
   
-
-   
   const { control, handleSubmit, formState } = useForm<ChatbotFormData>({
     resolver: zodResolver(chatbotFormSchema),
     defaultValues:{
-       name: chatBot.name || '',
-      context: chatBot.context || '',
-      responseTone: chatBot.responseTone || 'Professional',
-      responseTemplate: chatBot.responseTemplate || '',
+       name: accounts[accountIndex]?.chatbot?.name || '',
+      context:  accounts[accountIndex]?.chatbot?.context || '',
+      responseTone: accounts[accountIndex]?.chatbot?.responseTone || 'Professional',
+      responseTemplate: accounts[accountIndex]?.chatbot?.responseTemplate || '',
       socialAccountId: accounts[accountIndex]?.id || '',
     },
   });
+  
+  
+  if(!chatBot) return null;
+  
+
+   
 
   const handleSubmitClick =()=>{
      submitRef.current?.click();

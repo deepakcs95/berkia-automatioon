@@ -1,4 +1,5 @@
-import { InstagramAccountItem } from "@/lib/db";
+import { createNewChatBot } from "@/app/actions/chatbot";
+ import { InstagramAccountItem } from "@/lib/db";
 import { ChatbotFormData } from "@/lib/validator/chatbot";
 import { Chatbot } from "@prisma/client";
 import {
@@ -10,6 +11,7 @@ import {
   useOptimistic,
   useTransition,
 } from "react";
+import { toast } from "sonner";
 
 interface ChatbotContextType {
   accounts: InstagramAccountItem[];
@@ -49,10 +51,10 @@ export function ChatbotProvider({
         return newAccounts;
       });
     });
-  }, []);
+  }, [optimisticAccounts]);
 
-  const handleCreate = useCallback((data: ChatbotFormData) => {
-    startTransition(() => {
+  const handleCreate = useCallback(async (data: ChatbotFormData) => {
+    startTransition(async () => {
       const index = optimisticAccounts.findIndex(
         (account) => account.id === data.socialAccountId
       );
@@ -65,7 +67,20 @@ export function ChatbotProvider({
         return newAccounts;
       });
     });
-  }, []);
+
+      try {
+       const response = await createNewChatBot(data);
+
+        if (response.status === 200) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        console.error("Error creating chatbot:", error);
+        toast.error("Error creating chatbot");
+      }
+  }, [optimisticAccounts]);
 
   const handleCancel = useCallback(() => {}, []);
 
@@ -85,7 +100,7 @@ export function ChatbotProvider({
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
     
-  }, []);
+  }, [optimisticAccounts]);
 
   return (
     <ChatbotContext.Provider
