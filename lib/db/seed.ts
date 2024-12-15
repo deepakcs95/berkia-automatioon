@@ -12,6 +12,7 @@ async function main() {
         price: 0,
         description: 'Free plan',
         maxAccounts: 1,
+        maxChatBots: 1,
         maxComments: 5,
         maxMessages: 5,
         maxAutomations: 5,
@@ -31,6 +32,7 @@ async function main() {
         maxAccounts: 3,
         maxComments: 50,
         maxMessages: 50,
+        maxChatBots: 3,
         maxAutomations: 50,
         features: {
           1: 'it has 3 accounts',
@@ -46,6 +48,7 @@ async function main() {
         price: 99.99,
         description: 'Professional plan',
         maxAccounts: 5,
+        maxChatBots: 5,
         maxComments: 100,
         maxMessages: 100,
         maxAutomations: 100,

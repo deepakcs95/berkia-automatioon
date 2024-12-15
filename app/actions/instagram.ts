@@ -1,7 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import {
+ import {
   getAllDetailsOfInstagramAccountsByUserId,
   getInstagramAccountsByUserId,
   saveInstagramAccount,
@@ -16,15 +15,9 @@ import {
 } from "@/lib/Integration/social-account-auth";
 import { SocialAccount } from "@prisma/client";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
-import { redirect } from "next/navigation";
-import { getUser } from "./user";
-import { getAuthSession } from "@/lib/utils/utils";
+ import { getAuthSession } from "@/lib/utils/utils";
 
-export async function connect(code: string) {
-  console.log(code);
-
-  return code;
-}
+ 
 
 export const getCachedAccounts = unstable_cache(
   async (userId: string) => {
@@ -32,8 +25,7 @@ export const getCachedAccounts = unstable_cache(
     const result = await getInstagramAccountsByUserId(userId);
     return result;
   },
-  // Include userId in the cache key to make it unique per user
-  [`instagram-accounts`],
+   [`instagram-accounts`],
   {
     tags: ["instagram-accounts"],
     revalidate: 60,
