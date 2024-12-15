@@ -19,17 +19,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ChatbotFormData, chatbotFormSchema } from "@/lib/validator/chatbot";
 import { UserWithSubscription } from "@/lib/db";
 
-interface AddHeaderProps {
-  user: UserWithSubscription;
-}
+ 
 
-export const AddHeader = memo(({ user }: AddHeaderProps) => {
+export const AddHeader = memo(() => {
    const { accounts, handleCreate } = useChatbot();
 
   const { control, handleSubmit, formState, reset, } = useForm<ChatbotFormData>({
     resolver: zodResolver(chatbotFormSchema),
     defaultValues: {
-      socialAccountId: accounts[0]?.id || '',
+      socialAccountId: accounts[0]?.accountId || '',
        name: "dee",
       context: "ss",
       responseTone: "Professional",

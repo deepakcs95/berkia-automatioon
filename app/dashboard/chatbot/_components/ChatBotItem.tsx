@@ -30,7 +30,7 @@ export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
       context:  accounts[accountIndex]?.chatbot?.context || '',
       responseTone: accounts[accountIndex]?.chatbot?.responseTone || 'Professional',
       responseTemplate: accounts[accountIndex]?.chatbot?.responseTemplate || '',
-      socialAccountId: accounts[accountIndex]?.id || '',
+      socialAccountId: accounts[accountIndex]?.accountId || '',
     },
   });
   
@@ -63,7 +63,7 @@ export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
           </div>
           <div className="flex items-center space-x-2">
             <AccountActions
-              id={id}
+              id={chatBot.socialAccountId}
               isEditing={isEditing}
               setIsEditing={setIsEditing}
               handleSubmitClick={handleSubmitClick}

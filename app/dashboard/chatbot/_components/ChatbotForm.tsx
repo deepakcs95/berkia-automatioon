@@ -52,7 +52,7 @@ const ChatbotForm = memo(({ control, errors }: Props) => {
                 <SelectContent>
                   {accounts.map((account) => (
                   
-                      <SelectItem key={account.id} value={account.id}>
+                      <SelectItem key={account.id} value={account.accountId}>
                         <AccountSelect
                           status={account.status}
                           username={account.username}

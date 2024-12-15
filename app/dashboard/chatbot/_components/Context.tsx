@@ -1,4 +1,4 @@
-import { createNewChatBot } from "@/app/actions/chatbot";
+import { createNewChatBot, deleteChatBot, updateChatBot } from "@/app/actions/chatbot";
  import { InstagramAccountItem } from "@/lib/db";
 import { ChatbotFormData } from "@/lib/validator/chatbot";
 import { Chatbot } from "@prisma/client";
@@ -37,10 +37,10 @@ export function ChatbotProvider({
   const [optimisticAccounts, setOptimisticAccounts] =
     useOptimistic(initialAccounts);
 
-  const handleEdit = useCallback((data: ChatbotFormData) => {
+  const handleEdit = useCallback(async(data: ChatbotFormData) => {
     startTransition(() => {
       const index = optimisticAccounts.findIndex(
-        (account) => account.id === data.socialAccountId
+        (account) => account.accountId === data.socialAccountId
       );
 
       console.log(data, index);
@@ -50,13 +50,31 @@ export function ChatbotProvider({
         newAccounts[index].chatbot = { id: "", ...data } as unknown as Chatbot;
         return newAccounts;
       });
+
     });
+
+      try {
+        const response = await updateChatBot(data);
+        if (response.status === 200) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        console.error("Error updating chatbot:", error);
+        toast.error("Error updating chatbot");
+      }
+
+
+
+
+
   }, [optimisticAccounts]);
 
   const handleCreate = useCallback(async (data: ChatbotFormData) => {
     startTransition(async () => {
       const index = optimisticAccounts.findIndex(
-        (account) => account.id === data.socialAccountId
+        (account) => account.accountId === data.socialAccountId
       );
 
       console.log(data, index);
@@ -84,11 +102,11 @@ export function ChatbotProvider({
 
   const handleCancel = useCallback(() => {}, []);
 
-  const handleDelete = useCallback( async(socialAccountId: string) => {
-    startTransition(( ) => {
+  const handleDelete = useCallback( async (socialAccountId: string) => {
+    startTransition(  ( ) => {
       setOptimisticAccounts((prev) => {
         const newAccounts = [...prev];
-        const index = newAccounts.findIndex(account => account.id === socialAccountId);
+        const index = newAccounts.findIndex(account => account.accountId === socialAccountId);
         if (index !== -1) {
           newAccounts[index].chatbot = null;
         }
@@ -97,9 +115,24 @@ export function ChatbotProvider({
         return newAccounts;
       });
     });
+       
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
+
+try {
+        const response = await deleteChatBot(socialAccountId);
+        if (response.status === 200) {
+          toast.success(response.message);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error) {
+        console.error("Error deleting chatbot:", error);
+        toast.error("Error deleting chatbot");
+      }
+
+
+
+     
   }, [optimisticAccounts]);
 
   return (

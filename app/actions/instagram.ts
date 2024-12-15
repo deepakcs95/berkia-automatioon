@@ -149,7 +149,9 @@ export async function disconnectInstagramAccount(accountId: string) {
 }
 
 export async function getCurrentUserInstagramAccounts() {
- 
+  console.log('📝 Fetching Instagram accounts');
+  
+
   const id = await getAuthSession();
 
   if (!id) {

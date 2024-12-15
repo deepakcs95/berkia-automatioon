@@ -15,8 +15,7 @@ const {accounts} = useChatbot()
   
   return (
     <div className="space-y-8">
-      <p>{JSON.stringify(accounts[0]?.chatbot)}</p>
-      { accounts.map((account,index) =>{ return account.chatbot && (
+       { accounts.map((account,index) =>{ return account.chatbot && (
         
         <AccountList
           key={account.id}

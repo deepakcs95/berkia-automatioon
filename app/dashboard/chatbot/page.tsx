@@ -14,8 +14,7 @@ export default async function ChatbotPage() {
    
     const {accounts} = await getCurrentUserInstagramAccounts()  
 
-    const user = await getUser()
-
+ 
     if(!accounts ||  accounts.length == 0){
       return (
         <Card className="border-dashed">
@@ -41,7 +40,7 @@ export default async function ChatbotPage() {
 
        return (
         <Suspense fallback={<AutomationSkeleton/>}>
-         <ChatBotPage user={user} accounts={accounts}/>
+         <ChatBotPage  accounts={accounts}/>
         </Suspense>
       )
 

@@ -8,11 +8,10 @@
 import { ChatbotProvider } from "./Context";
 
 interface Props {
-  user: UserWithSubscription;
-  accounts: InstagramAccountItem[];
+   accounts: InstagramAccountItem[];
 }
 
-export default function ChatBotPage({ user, accounts }: Props) {
+export default function ChatBotPage({ accounts }: Props) {
    
 
 
@@ -20,7 +19,7 @@ export default function ChatBotPage({ user, accounts }: Props) {
     <>
     <ChatbotProvider initialAccounts={accounts}>
  
-      <AddHeader user={user} />
+      <AddHeader  />
       <ChatBotList     />
     </ChatbotProvider>
     </>
