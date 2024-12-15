@@ -80,7 +80,7 @@ export function ChatbotProvider({
         console.error("Error creating chatbot:", error);
         toast.error("Error creating chatbot");
       }
-  }, [optimisticAccounts]);
+  }, []);
 
   const handleCancel = useCallback(() => {}, []);
 
