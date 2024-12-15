@@ -17,6 +17,8 @@ import {
 import { SocialAccount } from "@prisma/client";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { redirect } from "next/navigation";
+import { getUser } from "./user";
+import { getAuthSession } from "@/lib/utils/utils";
 
 export async function connect(code: string) {
   console.log(code);
@@ -39,16 +41,15 @@ export const getCachedAccounts = unstable_cache(
 );
 
 export async function connectInstagramAccount(code: string) {
-  const session = await auth();
-
-  if (!session?.user) return redirect("/sign-in");
+ 
+  const id = await getAuthSession();
 
   try {
     const token = await getInstagramToken(code);
     const longLivedToken = await getLongLivedToken(token.access_token);
     const user = await getInstagramUser(longLivedToken.access_token);
     const account = await saveInstagramAccount(
-      session.user?.id || "",
+      id ,
       user,
       longLivedToken.access_token
     );
@@ -66,12 +67,12 @@ export async function connectInstagramAccount(code: string) {
 }
 
 export async function deleteConnectedInstagramAccount(accountId: string) {
-  const session = await auth();
+  const id = await getAuthSession();
 
-  if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+  if (!id) return { success: false, error: "Unauthorized" };
 
   try {
-    const accounts = await getCachedAccounts(session.user.id);
+    const accounts = await getCachedAccounts(id);
     const accountToDelete = accounts.find(
       (account) => account.accountId === accountId
     );
@@ -80,7 +81,21 @@ export async function deleteConnectedInstagramAccount(accountId: string) {
       return { success: false, error: "Instagram account not found" };
     }
 
-    await db.socialAccount.delete({ where: { id: accountToDelete.id } });
+    
+    await db.$transaction(async (transaction) => {
+      await transaction.socialAccount.delete({ where: { id: accountToDelete.id } });
+      await transaction.subscription.update({
+        where: {
+          userId:id,
+        },
+        data: {
+          accountsUsed: {
+            decrement: 1,
+          },
+        },
+      });
+    });
+
     console.log("✅ Instagram account deleted successfully ");
     revalidateTag("instagram-accounts");
     revalidatePath("/dashboard/account");
@@ -95,13 +110,15 @@ export async function deleteConnectedInstagramAccount(accountId: string) {
 }
 
 export async function disconnectInstagramAccount(accountId: string) {
-  const session = await auth();
+  const id = await getAuthSession();
 
-  if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+  if (!id) {
+    return { success: false, message: "Unauthorized" };
+  }
 
   try {
     // First, find the specific Instagram account with the given account_id
-    const accounts = await getCachedAccounts(session.user.id);
+    const accounts = await getCachedAccounts(id);
     const accountToDisconnect = accounts.find(
       (account) => account.accountId === accountId
     );
@@ -140,14 +157,19 @@ export async function disconnectInstagramAccount(accountId: string) {
 }
 
 export async function getCurrentUserInstagramAccounts() {
-  const session = await auth();
+ 
+  const id = await getAuthSession();
 
-  if (!session?.user?.id) {
-    redirect("/sign-in");
+  if (!id) {
+    return {
+      status: 401,
+      accounts: null,
+      message: "Unauthorized",
+    };
   }
 
   try {
-    const accounts = await getCachedAccounts(session.user.id);
+    const accounts = await getCachedAccounts(id);
 
     if (!(accounts.length > 0)) {
       return {
@@ -177,15 +199,16 @@ export async function getInstagramPostsByAccountId(
   cursor?: string,
   limit: number = 2
 ) {
-  const session = await auth();
+  
+  const id = await getAuthSession();
 
-  if (!session?.user?.id) {
-    redirect("/sign-in");
+  if (!id) {
+    return { success: false, message: "Unauthorized" };
   }
 
   try {
     const accounts = await getAllDetailsOfInstagramAccountsByUserId(
-      session.user.id
+      id
     );
 
     const account = accounts.find(

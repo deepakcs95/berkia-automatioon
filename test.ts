@@ -61,3 +61,33 @@
 //         }
 //     ]
 // }
+import { PrismaClient, SocialConnectionStatus, SocialType } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+async function name() {
+   return prisma.socialAccount.create({
+        data: {
+            accountId: 'ff3ee733-b9b6-56c0-b6ba-a0aa7483aff1',
+            userId:'ff3ee733-b9b6-56c0-b6ba-a0aa7483aff1',
+            socialType: SocialType.INSTAGRAM,
+            username: 'karthik',
+            profilePictureUrl: '',
+            status: SocialConnectionStatus.CONNECTED,
+            accessToken: '',
+            tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+        }
+      })};
+
+
+
+name().then((res) => console.log(res)).catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
+  .finally(async () => {
+     
+    await prisma.$disconnect()
+  })
+
+ 

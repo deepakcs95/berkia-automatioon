@@ -55,3 +55,4 @@ export const getUserByIdWithSubscription = cache(async (id: string) => {
   } } });
 });
 
+export type  UserWithSubscription = Awaited<ReturnType<typeof getUserByIdWithSubscription>>

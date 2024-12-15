@@ -37,7 +37,9 @@ export async function saveInstagramAccount(userId: string,instagramUser : Instag
         console.log(' Instagram account updated successfully ');
         return account
       } else {
-        const account = await db.socialAccount.create({
+
+        await db.$transaction(async (transaction) => {
+        const account = await transaction.socialAccount.create({
           data: {
               userId,
             socialType: SocialType.INSTAGRAM,
@@ -50,8 +52,21 @@ export async function saveInstagramAccount(userId: string,instagramUser : Instag
           },
         }); 
 
+        await transaction.subscription.update({
+          where: {
+            userId,
+          },
+          data: {
+            accountsUsed: {
+              increment: 1,
+            },
+          },
+        });
+
         console.log(' Instagram account saved successfully ');
         return account
+
+      })
       }
 }
 
@@ -61,6 +76,7 @@ export const getInstagramAccountsByUserId   = cache(async (userId: string) => {
   
   const account = await db.socialAccount.findMany({
     where: {  userId },
+    
     select: {
       id: true,
       socialType: true,
@@ -71,7 +87,8 @@ export const getInstagramAccountsByUserId   = cache(async (userId: string) => {
       userId: true,
       accessToken: false,
       tokenExpiresAt: false,
-    },
+      chatbot:true
+    }, 
   });
   return account;
 } )

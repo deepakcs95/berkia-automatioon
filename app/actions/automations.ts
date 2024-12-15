@@ -73,7 +73,7 @@ import { Subscription, Plan } from "@prisma/client"; // Assuming Prisma Client i
 
   switch(action) {
     case "createAutomation":
-      if(subscription.plan.maxAccounts < subscription.accountsUsed + 1) {
+      if(subscription.plan.maxAutomations < subscription.automationsUsed + 1) {
         return {
           isValid: false,
           message: "You have reached your account limit for this subscription.",
@@ -164,6 +164,10 @@ export async function deleteAutomationAction(automation_id: string) {
   try {
     const id = await getAuthSession();
 
+    if (!id) {
+      return { status: 401, message: "Unauthorized" };
+    }
+
     const validatedData = z.string().uuid().safeParse(automation_id);
 
     if (!validatedData.success) {
@@ -171,7 +175,7 @@ export async function deleteAutomationAction(automation_id: string) {
       return { status: 400, message: "Invalid automation ID" };
     }
 
-    const success = await deleteAutomation(automation_id);
+    const success = await deleteAutomation(id, automation_id);
     if (!success)
       return { status: 500, message: "An error occurred please try again" };
 
@@ -185,6 +189,8 @@ export async function deleteAutomationAction(automation_id: string) {
 
 export async function getAllSocialAccountAndAutomations() {
   const id = await getAuthSession();
+
+ 
   return unstable_cache(
     async (id: string) => {
       console.log("cache miss getAllSocialAccountAndAutomations, ", id);

@@ -8,121 +8,118 @@ datasource db {
 }
 
 model User {
-  id              String          @id
-  name            String?
-  email           String?         @unique(map: "user_email_unique")
-  emailVerified   DateTime?       @db.Timestamp(6)
-  image           String?
-  socialAccounts  SocialAccount[]
-  subscription Subscription?    
+  id             String          @id
+  name           String?
+  email          String?         @unique(map: "user_email_unique")
+  emailVerified  DateTime?       @db.Timestamp(6)
+  image          String?
+  socialAccounts SocialAccount[]
+  subscription   Subscription?
+
   @@map("user")
 }
 
 model SocialAccount {
-  id                  String                   @id @default(uuid())
-  socialType         SocialType
-  username            String
-  profilePictureUrl  String?
-  status              SocialConnectionStatus
-  accountId          String                   @unique  
-  accessToken        String?
-  tokenExpiresAt     DateTime?                @db.Timestamp(6)
-  createdAt          DateTime?                @default(now()) @db.Timestamp(6)
-  updatedAt          DateTime?                @default(now()) @db.Timestamp(6)
-  userId             String
-  automations        Automation[]
-  user               User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chatbot            Chatbot?
+  id                String                 @id @default(uuid())
+  socialType        SocialType
+  username          String
+  profilePictureUrl String?
+  status            SocialConnectionStatus
+  accountId         String                 @unique
+  accessToken       String?
+  tokenExpiresAt    DateTime?              @db.Timestamp(6)
+  createdAt         DateTime?              @default(now()) @db.Timestamp(6)
+  updatedAt         DateTime?              @default(now()) @db.Timestamp(6)
+  userId            String
+  automations       Automation[]
+  user              User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatbot           Chatbot?
+
   @@map("social_accounts")
-} 
-
-
-model Chatbot  {
-  id              String     @id @default(cuid())
-  socialAccountId String      @unique
-  name            String
-  context         String?
-  responseTone    String    
-  responseTemplate String    
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  socialAccount   SocialAccount @relation(fields: [socialAccountId], references: [accountId], onDelete: Cascade)
 }
 
+model Chatbot {
+  id               String              @id @default(cuid())
+  socialAccountId  String              @unique
+  name             String
+  context          String?
+  responseTone     ChatbotResponseTone
+  responseTemplate String
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  socialAccount    SocialAccount       @relation(fields: [socialAccountId], references: [accountId], onDelete: Cascade)
+}
 
 model Automation {
-  id           String        @id @default(uuid())
-  name         String
-  isActive     Boolean       @default(true)
-  accountId    String
-  targetPosts  String[]
-  createdAt    DateTime?     @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime?     @default(now()) @db.Timestamp(6)
-  account      SocialAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  actions      Action[]
-  triggers     Trigger?      
+  id          String        @id @default(uuid())
+  name        String
+  isActive    Boolean       @default(true)
+  accountId   String
+  targetPosts String[]
+  createdAt   DateTime?     @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime?     @default(now()) @db.Timestamp(6)
+  account     SocialAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  actions     Action[]
+  triggers    Trigger?
 }
 
 model Trigger {
-  id            String       @id @default(uuid())
-  type          TriggerType
-  keyword       String
-  automationId  String       @unique
-  automation    Automation   @relation(fields: [automationId], references: [id], onDelete: Cascade)
-
+  id           String      @id @default(uuid())
+  type         TriggerType
+  keyword      String
+  automationId String      @unique
+  automation   Automation  @relation(fields: [automationId], references: [id], onDelete: Cascade)
 }
 
 model Action {
-  id            String      @id @default(uuid())
-  type          ActionType
-  content       String
-  automationId  String
-  automation    Automation  @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  id           String     @id @default(uuid())
+  type         ActionType
+  content      String
+  automationId String
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
 
   @@map("actions")
 }
 
 model Plan {
-  id          String   @id @default(cuid())
-  name        SubscriptionPlanType @unique
+  id             String               @id @default(cuid())
+  name           SubscriptionPlanType @unique
   description    String
-  creditLimit Int
-  price          Float          
-  maxAccounts    Int 
-  maxAutomations Int             
-  maxComments    Int              
-  maxMessages    Int             
-  features    Json      
-  duration    Int       
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  subscriptions Subscription[]
+  creditLimit    Int
+  price          Float
+  maxAccounts    Int
+  maxAutomations Int
+  maxComments    Int
+  maxMessages    Int
+  features       Json
+  duration       Int
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  subscriptions  Subscription[]
 }
 
 model Subscription {
-  id            String             @id @default(cuid())
-  userId        String             @unique
-  planId        String           
-  startDate     DateTime
-  endDate       DateTime
-  status        SubscriptionStatus
-  commentsUsed  Int               @default(0)
-  messagesUsed  Int               @default(0)
-  automationsUsed Int             @default(0)
-  creditsUsed   Int             @default(0)
-  accountsUsed  Int               @default(0)
-  cancelledAt   DateTime?         
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  id              String             @id @default(cuid())
+  userId          String             @unique
+  planId          String
+  startDate       DateTime
+  endDate         DateTime
+  status          SubscriptionStatus
+  commentsUsed    Int                @default(0)
+  messagesUsed    Int                @default(0)
+  automationsUsed Int                @default(0)
+  creditsUsed     Int                @default(0)
+  accountsUsed    Int                @default(0)
+  cancelledAt     DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
-  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan          Plan              @relation(fields: [planId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan Plan @relation(fields: [planId], references: [id])
 
   @@index([userId])
   @@index([planId])
-
 }
- 
 
 enum SocialType {
   INSTAGRAM
@@ -154,4 +151,10 @@ enum SubscriptionPlanType {
   FREE
   PREMIUM
   PRO
+}
+
+enum ChatbotResponseTone {
+  Professional
+  Casual
+  Friendly
 }

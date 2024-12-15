@@ -1,18 +1,20 @@
-import { SocialAccountType } from '@/lib/db/automations';
-import { cn } from '@/lib/utils/utils'
-import { SocialAccount } from '@prisma/client';
+ import { cn } from '@/lib/utils/utils'
+import {   SocialConnectionStatus } from '@prisma/client';
 import { Instagram } from 'lucide-react'
-import React from 'react'
+import  { memo } from 'react'
 
 interface AccountListProps {
-    account: SocialAccountType;
-    children?: React.ReactNode
-     
+    username: string;
+    status: SocialConnectionStatus;
+    children?: React.ReactNode;
+      
 }
 
-export const AccountList = React.memo(function AccountList({account,children}: AccountListProps) {
+export const AccountList =  memo(({username,status,children}: AccountListProps) => {
+  console.log("AccountList rendered");
+  
   return (
-    <div key={account.id} className="space-y-4">
+    <div key={username} className="space-y-4">
     <>
       <div className="flex items-center space-x-4 mb-4">
         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-0.5">
@@ -21,14 +23,14 @@ export const AccountList = React.memo(function AccountList({account,children}: A
           </div>
         </div>
         <div>
-          <h3 className="text-lg font-semibold">@{account.username}</h3>
+          <h3 className="text-lg font-semibold">@{username}</h3>
           <p
             className={cn(
               "text-sm",
-              account.status === "CONNECTED" ? "text-green-500" : "text-red-500"
+              status === SocialConnectionStatus.CONNECTED ? "text-green-500" : "text-red-500"
             )}
           >
-            {account.status === "CONNECTED" ? "● Connected" : "○ Disconnected"}
+            {status === SocialConnectionStatus.CONNECTED ? "● Connected" : "○ Disconnected"}
           </p>
         </div>
       </div>
@@ -40,3 +42,5 @@ export const AccountList = React.memo(function AccountList({account,children}: A
   </div>  
 )
 })
+
+AccountList.displayName = "AccountList"

@@ -6,7 +6,7 @@ import React, {
     
 } from "react";
 import AddAutomationCard from "./AddAutomationCard";
-import { AccountList } from "./AccountList";
+import { AccountList } from "@/components/global/AccountList";
 import { SocialAccountArrayType } from "@/lib/db/automations";
 import AutomationItem from "./AutomationItem";
 import { AutomationsType } from "@/lib/types";
@@ -14,7 +14,7 @@ import { useAutomationOptimistic } from "@/hooks/useOptimisticAutomations";
 import { AutomationSchemaType } from "@/lib/validator/automation";
 import dynamic from "next/dynamic";
 
-import AutomationDialog from "./ui/DialogSection";
+import AutomationDialog from "@/components/global/DialogSection";
 import FormSkeleton from "@/components/skeleton/FormSkeleton";
 
 export const LazyAutomationForm = dynamic(() => import("./AutomationFrom"), {
@@ -115,7 +115,8 @@ export default function AutomationsPage({
       .map((account) => (
         <AccountList 
           key={account.accountId} 
-          account={account}
+          username={account.username}
+          status={account.status}
         >
           {account.automations.map((automation) => (
             <AutomationItem

@@ -60,8 +60,8 @@ export const createAutomation = async (userId: string, data: AutomationsType) =>
     }
 
     data.accountId = socialAccount.id
-
-      await db.automation.create({
+    await db.$transaction(async (transaction) => {
+      await transaction.automation.create({
       data : {
         id: data.id,
         accountId: socialAccount.id,
@@ -91,6 +91,20 @@ export const createAutomation = async (userId: string, data: AutomationsType) =>
       
     );
 
+    await transaction.subscription.update({
+      where: {
+        userId: userId,
+      },
+      data: {
+        automationsUsed: {
+          increment: 1,
+        },
+        
+      },
+    });
+
+    
+  })
     console.log(`Automation created for user with id ${userId} 🎉`);
    return true
     
@@ -194,14 +208,31 @@ export const updateAutomation = async (userId: string, data: AutomationsType) =>
   }
 };
 
-export const deleteAutomation = async ( automationId: string) => {
+export const deleteAutomation = async ( userId: string, automationId: string) => {
   try {
-      await db.automation.delete({
-      where: {
-        id: automationId,
-        
-      },
-    });
+
+    await db.$transaction(async (transaction) => {
+      await transaction.automation.delete({
+        where: {
+          id: automationId,
+          
+        },
+      });
+
+
+      await transaction.subscription.update({
+        where: {
+          userId: userId,
+        },
+        data: {
+          automationsUsed: {
+            decrement: 1,
+          },
+          
+        },
+      });
+    })
+      
     console.log(`Automation deleted for user with id ${automationId} 🎉`);
     return true
   } catch (error) {

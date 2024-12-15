@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { PostSelector } from './PostSelector'
 import { AutomationSchema, AutomationSchemaType } from '@/lib/validator/automation'
 import { ActionType, SocialConnectionStatus, TriggerType } from '@prisma/client'
+import AccountSelect from '@/components/global/AccountSelect'
 
 interface AutomationFormProps {
   accounts: SocialAccountArrayType
@@ -103,16 +104,10 @@ export default function AutomationForm({
             <SelectContent>
               {accounts.map((account) => (
                 <SelectItem key={account.id} value={account.accountId}>
-                  <div className="flex items-center justify-center gap-3">
-                    <Image src={account.profilePictureUrl || ''} alt="Account" className="rounded-full" unoptimized   loading='lazy' quality={20} width={15} height={15} />
-                    <p>@{account.username}</p>
-                    
-                     
-                    <span  className={cn(
-              "text-sm",
-              account.status === SocialConnectionStatus.CONNECTED ? "text-green-500" : "text-red-500"
-            )} >●</span>
-                  </div>
+                  <AccountSelect
+                    username={account.username}
+                    profilePictureUrl={account.profilePictureUrl }
+                    status={account.status}/>
                 </SelectItem>
               ))}
             </SelectContent>
