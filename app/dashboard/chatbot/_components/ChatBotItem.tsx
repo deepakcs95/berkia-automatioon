@@ -14,58 +14,50 @@ interface Props {
   username: string;
 }
 
-export const ChatBotItem = memo(({ id, accountIndex, username }: Props) => {
+export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
-
-  const { accounts } = useChatbot();
-
-  const defaultValues = useMemo(
-    () =>
-      accounts && accounts.length > 0
-        ? {
-            accountId: accounts[accountIndex].id || '',
-            name: accounts[accountIndex].chatbot?.name || '',
-            context: accounts[accountIndex].chatbot?.context || '',
-            responseTone: accounts[accountIndex].chatbot?.responseTone || 'Professional',
-            responseTemplate: accounts[accountIndex].chatbot?.responseTemplate || ''
-          }
-        : {
-            accountId: '',
-            name: '',
-            context: '',
-            responseTone: 'Professional',
-            responseTemplate: ''
-          } as ChatbotFormData,
-    [accounts, accountIndex]
-  );
-
-  console.log(defaultValues);
+  const submitRef = React.useRef<HTMLButtonElement>(null);
   
+  
+  const { accounts,handleEdit } = useChatbot();
+
+  const chatBot = useMemo(()=>accounts[accountIndex]?.chatbot, [accounts, accountIndex]);
+
+    if(!chatBot) return null;
+
+  
+
+   
   const { control, handleSubmit, formState } = useForm<ChatbotFormData>({
     resolver: zodResolver(chatbotFormSchema),
-    defaultValues,
+    defaultValues:{
+       name: chatBot.name || '',
+      context: chatBot.context || '',
+      responseTone: chatBot.responseTone || 'Professional',
+      responseTemplate: chatBot.responseTemplate || '',
+      socialAccountId: accounts[accountIndex]?.id || '',
+    },
   });
 
   const handleSubmitClick =()=>{
-    console.log("edit clicked");
-
-    handleSubmit(onSubmit)();
-  }
+     submitRef.current?.click();
+   }
 
   const onSubmit = (data: ChatbotFormData) => {
-    console.log(data);
-    setIsEditing(false);
+     setIsEditing(false);
+    handleEdit(data);
   };
 
-  return (
+ 
+  return  chatBot && (
     <Card key={id} className="group">
       <CardContent className="pt-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
             <Sparkles className="h-5 w-5 text-primary" />
             <div>
-              <h4 className="font-medium">{username}</h4>
-              <p className="text-sm text-muted-foreground"></p>
+              <h4 className="font-medium">{chatBot?.name }</h4>
+              <p className="text-sm text-muted-foreground">{chatBot?.context}</p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -78,10 +70,12 @@ export const ChatBotItem = memo(({ id, accountIndex, username }: Props) => {
           </div>
         </div>
         {isEditing && (
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form   action={""}  onSubmit={handleSubmit(onSubmit)}>
             <ChatbotForm control={control} errors={formState.errors} />
+            <button ref={submitRef}   type="submit">Submit</button>
           </form>
         )}
+        
       </CardContent>
     </Card>
   );

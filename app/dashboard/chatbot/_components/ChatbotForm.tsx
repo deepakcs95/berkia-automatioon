@@ -1,34 +1,35 @@
-import { memo } from 'react';
-import { useForm, Controller, Control, FormState, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { memo } from "react";
+import {
+  useForm,
+  Controller,
+  Control,
+  FormState,
+  UseFormHandleSubmit,
+  FieldErrors,
+} from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-import { useChatbot } from './Context';
-import AccountSelect from '@/components/global/AccountSelect';
-import { ChatbotResponseTone } from '@prisma/client';
-import { ChatbotFormData } from '@/lib/validator/chatbot';
-
+import { useChatbot } from "./Context";
+import AccountSelect from "@/components/global/AccountSelect";
+ import { ChatbotFormData } from "@/lib/validator/chatbot";
 
 interface Props {
-  control:Control<ChatbotFormData>;
+  control: Control<ChatbotFormData>;
   errors: FieldErrors<ChatbotFormData>;
- }
+}
 
-
- const ChatbotForm = memo(({ control, errors }: Props) => {
+const ChatbotForm = memo(({ control, errors }: Props) => {
   const { accounts } = useChatbot();
-
-
- 
 
   return (
     <div className="space-y-4">
@@ -38,26 +39,27 @@ interface Props {
             Select Account
           </label>
           <Controller
-            name="accountId"
+            name="socialAccountId"
             control={control}
             render={({ field }) => (
-              <Select 
-                value={field.value || accounts[0].id} 
-                onValueChange={field.onChange}
+              <Select
+                defaultValue={field.value || ""}
+                onValueChange={(value) => field.onChange(value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Instagram Account" />
                 </SelectTrigger>
                 <SelectContent>
                   {accounts.map((account) => (
-                    <SelectItem key={account.id} value={account.id}>
-                      <AccountSelect
-                        status={account.status}
-                        username={account.username}
-                        profilePictureUrl={account.profilePictureUrl}
-                      />
-                    </SelectItem>
-                  ))}
+                  
+                      <SelectItem key={account.id} value={account.id}>
+                        <AccountSelect
+                          status={account.status}
+                          username={account.username}
+                          profilePictureUrl={account.profilePictureUrl}
+                        />
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             )}
@@ -72,10 +74,7 @@ interface Props {
           control={control}
           render={({ field }) => (
             <div>
-              <Input 
-                {...field} 
-                placeholder="e.g., Main Chatbot" 
-              />
+              <Input {...field} placeholder="e.g., Main Chatbot" />
               {errors && errors.name && (
                 <p className="text-red-500 text-sm mt-1">
                   {errors.name.message}
@@ -92,11 +91,18 @@ interface Props {
           name="context"
           control={control}
           render={({ field }) => (
-            <Textarea
-              {...field}
-              placeholder="Add context about your business or services"
-              className="min-h-[100px]"
-            />
+            <div>
+              <Textarea
+                {...field}
+                placeholder="Add context about your business or services"
+                className="min-h-[100px]"
+              />
+              {errors && errors.context && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.context.message}
+                </p>
+              )}
+            </div>
           )}
         />
       </div>
@@ -108,17 +114,14 @@ interface Props {
           control={control}
           render={({ field }) => (
             <div>
-              <Select 
-                value={field.value} 
-                onValueChange={field.onChange}
-              >
+              <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select Response Tone" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="professional">Professional</SelectItem>
-                  <SelectItem value="casual">Casual</SelectItem>
-                  <SelectItem value="friendly">Friendly</SelectItem>
+                  <SelectItem value="Professional">Professional</SelectItem>
+                  <SelectItem value="Casual">Casual</SelectItem>
+                  <SelectItem value="Friendly">Friendly</SelectItem>
                 </SelectContent>
               </Select>
               {errors && errors.responseTone && (
@@ -158,6 +161,6 @@ interface Props {
   );
 });
 
-ChatbotForm.displayName = 'ChatbotForm';
+ChatbotForm.displayName = "ChatbotForm";
 
-export default ChatbotForm
+export default ChatbotForm;

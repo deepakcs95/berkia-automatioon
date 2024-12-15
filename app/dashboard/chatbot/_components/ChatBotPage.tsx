@@ -19,8 +19,8 @@ export default function ChatBotPage({ user, accounts }: Props) {
   return (
     <>
     <ChatbotProvider initialAccounts={accounts}>
-
-      <AddHeader />
+ 
+      <AddHeader user={user} />
       <ChatBotList     />
     </ChatbotProvider>
     </>

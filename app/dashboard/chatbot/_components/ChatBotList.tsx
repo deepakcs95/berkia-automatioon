@@ -15,7 +15,8 @@ const {accounts} = useChatbot()
   
   return (
     <div className="space-y-8">
-      {accounts.map((account,index) => (
+      <p>{JSON.stringify(accounts[0]?.chatbot)}</p>
+      { accounts.map((account,index) =>{ return account.chatbot && (
         
         <AccountList
           key={account.id}
@@ -28,7 +29,7 @@ const {accounts} = useChatbot()
              username={account.username}
           />
          </AccountList>
-      ))}
+      )})}
     </div>
   );
 });

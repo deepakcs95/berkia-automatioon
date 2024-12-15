@@ -58,6 +58,8 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
 
       if (result?.success) {
         toast.success("success");
+        router.refresh();
+
       } else {
         toast.error(result?.message || "Failed Please try again");
       }
@@ -67,6 +69,7 @@ export function AccountCard({ account }: { account: SocialAccountType }) {
       toast.error("Failed Please try again");
     } finally {
       setIsDeleting(false);
+
     }
   };
 

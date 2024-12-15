@@ -49,6 +49,7 @@ export async function saveInstagramAccount(userId: string,instagramUser : Instag
             accountId: instagramUser.user_id,
             accessToken: accesToken,
             tokenExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+            
           },
         }); 
 

@@ -1,53 +1,102 @@
- 
-
-
-
-import { InstagramAccountItem } from '@/lib/db';
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { InstagramAccountItem } from "@/lib/db";
+import { ChatbotFormData } from "@/lib/validator/chatbot";
+import { Chatbot } from "@prisma/client";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  ReactNode,
+  useOptimistic,
+  useTransition,
+} from "react";
 
 interface ChatbotContextType {
   accounts: InstagramAccountItem[];
-  editingId: string | null;
-  setEditingId: (id: string | null) => void;
-  handleEdit: (id: string) => void;
+  handleEdit: (data: ChatbotFormData) => void;
   handleCancel: () => void;
   handleDelete: (id: string) => void;
-  handleCreate: (id: string) => void;
+  handleCreate: (data: ChatbotFormData) => void;
 }
 
-export const ChatbotContext = createContext<ChatbotContextType | undefined>(undefined);
+export const ChatbotContext = createContext<ChatbotContextType | undefined>(
+  undefined
+);
 
-export function ChatbotProvider({ children, initialAccounts }: { children: ReactNode, initialAccounts: InstagramAccountItem[] }) {
-  const [accounts, setAccounts] = useState(initialAccounts);
-  const [editingId, setEditingId] = useState<string | null>(null);
+export function ChatbotProvider({
+  children,
+  initialAccounts,
+}: {
+  children: ReactNode;
+  initialAccounts: InstagramAccountItem[];
+}) {
+  const [isPending, startTransition] = useTransition();
 
-  const handleEdit = useCallback((id: string) => {
-    setEditingId(id);
+  const [optimisticAccounts, setOptimisticAccounts] =
+    useOptimistic(initialAccounts);
+
+  const handleEdit = useCallback((data: ChatbotFormData) => {
+    startTransition(() => {
+      const index = optimisticAccounts.findIndex(
+        (account) => account.id === data.socialAccountId
+      );
+
+      console.log(data, index);
+
+      setOptimisticAccounts((prev) => {
+        const newAccounts = [...prev];
+        newAccounts[index].chatbot = { id: "", ...data } as unknown as Chatbot;
+        return newAccounts;
+      });
+    });
   }, []);
-  
-  
-  const handleCreate = useCallback((id: string) => {
-    setEditingId(id);
+
+  const handleCreate = useCallback((data: ChatbotFormData) => {
+    startTransition(() => {
+      const index = optimisticAccounts.findIndex(
+        (account) => account.id === data.socialAccountId
+      );
+
+      console.log(data, index);
+
+      setOptimisticAccounts((prev) => {
+        const newAccounts = [...prev];
+        newAccounts[index].chatbot = { id: "", ...data } as unknown as Chatbot;
+        return newAccounts;
+      });
+    });
   }, []);
 
-  const handleCancel = useCallback(() => {
-    setEditingId(null);
-  }, []);
+  const handleCancel = useCallback(() => {}, []);
 
-  const handleDelete = useCallback((id: string) => {
-    setAccounts(prev => prev.filter(account => account.id !== id));
+  const handleDelete = useCallback( async(socialAccountId: string) => {
+    startTransition(( ) => {
+      setOptimisticAccounts((prev) => {
+        const newAccounts = [...prev];
+        const index = newAccounts.findIndex(account => account.id === socialAccountId);
+        if (index !== -1) {
+          newAccounts[index].chatbot = null;
+        }
+        console.log(newAccounts);
+        
+        return newAccounts;
+      });
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    
   }, []);
 
   return (
-    <ChatbotContext.Provider value={{
-      accounts,
-      editingId,
-      setEditingId,
-      handleEdit,
-      handleCancel,
-      handleDelete,
-      handleCreate
-    }}>
+    <ChatbotContext.Provider
+      value={{
+        accounts: optimisticAccounts,
+        handleEdit,
+        handleCancel,
+        handleDelete,
+        handleCreate,
+      }}
+    >
       {children}
     </ChatbotContext.Provider>
   );
@@ -56,7 +105,7 @@ export function ChatbotProvider({ children, initialAccounts }: { children: React
 export function useChatbot() {
   const context = useContext(ChatbotContext);
   if (context === undefined) {
-    throw new Error('useChatbot must be used within a ChatbotProvider');
+    throw new Error("useChatbot must be used within a ChatbotProvider");
   }
   return context;
 }

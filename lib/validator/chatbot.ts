@@ -1,9 +1,10 @@
 import { ChatbotResponseTone } from "@prisma/client";
 import { z } from "zod";
 
+ 
 // Zod validation schema
 export const chatbotFormSchema = z.object({
-    accountId: z.string().min(1, "Account ID is required"),
+    socialAccountId: z.string().min(1, "Account ID is required"),
     name: z.string().min(1, "Chatbot name is required"),
     context: z.string().min(1, "Context is required"),
     responseTone: z.enum([ChatbotResponseTone.Casual, ChatbotResponseTone.Friendly, ChatbotResponseTone.Professional], {

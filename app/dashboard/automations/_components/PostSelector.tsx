@@ -50,7 +50,7 @@ export function PostSelector({ field, postaccountId, selectedPosts }: PostSelect
       getInstagramPostsByAccountId(
         postaccountId || '',
         pageParam,
-       3
+       5
       ),
     getNextPageParam: (lastPage) => lastPage?.nextCursor || null  ,
     initialPageParam: "",
