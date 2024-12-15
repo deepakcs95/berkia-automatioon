@@ -158,4 +158,6 @@ interface Props {
   );
 });
 
+ChatbotForm.displayName = 'ChatbotForm';
+
 export default ChatbotForm
