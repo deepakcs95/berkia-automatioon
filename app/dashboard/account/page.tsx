@@ -26,7 +26,7 @@ export  default async function AccountPage({searchParams,
     <Suspense fallback={<AccountsPageSkeletion/>}>
 
       <div className="grid  gap-6 ">
-      {(user?.subscription?.accountsUsed! < user?.subscription?.plan.maxAccounts!) && <AddAccount status={status}/>}
+      {(user?.subscription && user?.subscription?.accountsUsed < user?.subscription?.plan.maxAccounts) && <AddAccount status={status}/>}
 
         {/* Connected Accounts */}
         <div className="grid gap-6  md:grid-cols-2 lg:grid-cols-3 ">
