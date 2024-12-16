@@ -73,7 +73,7 @@ export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
         {isEditing && (
           <form   action={""}  onSubmit={handleSubmit(onSubmit)}>
             <ChatbotForm control={control} errors={formState.errors} />
-            <button ref={submitRef}   type="submit">Submit</button>
+            <button ref={submitRef} className="sr-only"   type="submit">Submit</button>
           </form>
         )}
         
@@ -83,3 +83,4 @@ export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
 });
 
 ChatBotItem.displayName = "ChatBotList";
+

@@ -51,7 +51,7 @@ export async function createNewAutomation(automation: AutomationsType) {
 
 
 import { Subscription, Plan } from "@prisma/client"; // Assuming Prisma Client is used
-import { validateSubscriptionForUser } from "@/lib/utils/subscriptionValidator";
+import { validateSubscriptionForUser } from "@/lib/validator/subscriptionValidator";
 
  
 

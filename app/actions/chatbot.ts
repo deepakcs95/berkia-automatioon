@@ -3,7 +3,7 @@
 import { getAuthSession } from "@/lib/utils/utils";
 import { chatbotFormSchema } from "@/lib/validator/chatbot";
 import { getUser } from "./user";
-import { validateSubscriptionForUser } from "@/lib/utils/subscriptionValidator";
+import { validateSubscriptionForUser } from "@/lib/validator/subscriptionValidator";
 import {   createChatBotDb, deleteChatBotDb, updateChatBotDb } from "@/lib/db/chatbot";
 import { revalidatePath, revalidateTag } from "next/cache";
 
