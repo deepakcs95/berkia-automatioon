@@ -1,16 +1,41 @@
-import { User, SocialAccount } from '@prisma/client';
+import { User, SocialAccount, Trigger, TriggerType } from '@prisma/client';
+import { findSubscriptionPlanByUserId, findTriggerAndAssociatedAutomation, UserWithSubscriptionPlan } from '../db';
 
 interface PlanValidationResult {
   isValid: boolean;
   error?: string;
 }
 
-export async function validateUserPlan(user: User): Promise<PlanValidationResult> {
-  // TODO: Implement actual plan validation logic
-  // This would check the user's subscription status, plan limits, etc.
-  return {
-    isValid: true
-  };
+export async function validateUserPlan(recivedUser: User , type:TriggerType | 'ChatBot') {
+ 
+  const user = await findSubscriptionPlanByUserId(recivedUser.id)
+
+  if (!user?.subscription || !user?.subscription?.plan ) {
+    throw new Error('User is not subscribed to a plan')
+  }
+
+ switch (type) {
+    case 'ChatBot':
+      if (user.subscription.plan.maxChatBots < user.subscription.chatBotsUsed + 1 || user.subscription.plan.creditLimit < user.subscription.creditsUsed + 0) {
+        throw new Error('You have reached your account limit for this subscription')
+      }
+      break;
+    case 'COMMENT':
+      if (user.subscription.plan.maxComments < user.subscription.commentsUsed + 1) {
+        throw new Error('You have reached your account limit for this subscription')
+      }
+      break; 
+   case 'MESSAGE':
+      if (user.subscription.plan.maxMessages < user.subscription.messagesUsed + 1) {
+        throw new Error('You have reached your account limit for this subscription')
+      }
+      break;
+    default:
+      throw new Error('Invalid trigger type');  
+  }
+ 
+  return    true
+  
 }
 
 export async function validateUserCredits(user: User): Promise<PlanValidationResult> {

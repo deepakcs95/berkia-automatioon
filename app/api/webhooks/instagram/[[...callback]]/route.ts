@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
 
     const data = matchWebhookTriggerType(webhookBody.entry[0])
 
+  console.log(data);
+  
+
     if(!data) {
       console.log('No trigger found');
       return new NextResponse("No trigger found", { status: 200 });

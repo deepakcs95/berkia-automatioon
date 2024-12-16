@@ -1,5 +1,5 @@
 import { processWebhook } from "@/app/actions/webhooks";
-import { TriggerType as trigger_type } from "@prisma/client";
+import { TriggerType as trigger_type, TriggerType } from "@prisma/client";
 
 export interface CommentWebhook {
     id: string;
@@ -48,7 +48,23 @@ export interface CommentWebhook {
     recipient_id: string  
   }
   
-   
+  export function extractWebhookContent(webhook: ProcessedWebhook): {
+    type: TriggerType;
+    content: string | undefined;
+  } {
+    if (webhook.type === TriggerType.COMMENT) {
+      return {
+        type: TriggerType.COMMENT,
+        content: webhook.content,
+      };
+    } else {
+      return {
+        type: TriggerType.MESSAGE,
+        content: webhook.content,
+      };
+    }
+  }
+ 
  
   
   export function matchWebhookTriggerType(webhookData: CommentWebhook | MessageWebhook): ProcessedWebhook | null {

@@ -56,3 +56,13 @@ export const getUserByIdWithSubscription = cache(async (id: string) => {
 });
 
 export type  UserWithSubscription = Awaited<ReturnType<typeof getUserByIdWithSubscription>>
+
+export const findSubscriptionPlanByUserId = cache(async (userId: string) => {
+  return await db.user.findUnique({ where: { id: userId },include: { subscription: {
+    include: {
+      plan: true
+    }
+  } } });
+});
+
+export type  UserWithSubscriptionPlan = Awaited<ReturnType<typeof getUserByIdWithSubscription>>

@@ -69,7 +69,7 @@ export function ChatbotProvider({
 
 
 
-  }, [optimisticAccounts]);
+  }, []);
 
   const handleCreate = useCallback(async (data: ChatbotFormData) => {
     startTransition(async () => {
@@ -98,7 +98,7 @@ export function ChatbotProvider({
         console.error("Error creating chatbot:", error);
         toast.error("Error creating chatbot");
       }
-   }, [optimisticAccounts]);
+   }, []);
  
   const handleCancel = useCallback(() => {}, []);
 
@@ -133,7 +133,7 @@ try {
 
 
      
-  }, [optimisticAccounts]);
+  }, []);
 
   return (
     <ChatbotContext.Provider

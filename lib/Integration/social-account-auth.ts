@@ -116,8 +116,8 @@ export async function validateInstagramToken(account:SocialAccount): Promise<Soc
 const {accessToken, tokenExpiresAt} = account
 
   if (!accessToken || !tokenExpiresAt) {
-    console.log('❌ Instagram token/token_expires_at is missing');
-    return  null;
+    throw new Error('❌ Instagram token/token_expires_at is missing');
+     
   }
 
   if(isTokenExpiringSoon(tokenExpiresAt))  {
@@ -137,10 +137,11 @@ const {accessToken, tokenExpiresAt} = account
         return account
       }
     }catch (error) {
-      console.log(' ❌ Error refreshing Instagram token:', error);
+      console.log(error);
+      
       await updateRefreshToken(account.id, "", new Date(Date.now()) ,'DISCONNECTED')
-      return null
-    }
+      throw new Error(' ❌ Error refreshing Instagram token:')
+     }
 
     }
 
