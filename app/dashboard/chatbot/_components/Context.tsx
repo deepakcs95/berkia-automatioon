@@ -98,8 +98,8 @@ export function ChatbotProvider({
         console.error("Error creating chatbot:", error);
         toast.error("Error creating chatbot");
       }
-  }, [optimisticAccounts]);
-
+   }, [optimisticAccounts]);
+ 
   const handleCancel = useCallback(() => {}, []);
 
   const handleDelete = useCallback( async (socialAccountId: string) => {
