@@ -3,7 +3,7 @@ import { User } from "next-auth";
 import { cache } from "react";
 import { generateIdFromEmail } from "@/lib/utils/utils";
 import { db } from "@/lib/db/prisma";
-import { SubscriptionPlanType } from "@prisma/client";
+import { Prisma, Subscription, SubscriptionPlanType } from "@prisma/client";
 
 export const onboardUser = async (user: User) => {
   if (!user.email)    throw new Error("User email is null or undefined");
@@ -66,3 +66,11 @@ export const findSubscriptionPlanByUserId = cache(async (userId: string) => {
 });
 
 export type  UserWithSubscriptionPlan = Awaited<ReturnType<typeof getUserByIdWithSubscription>>
+
+
+export const updateUsageOfSubscription = cache(async (userId: string, data:Prisma.SubscriptionUpdateManyArgs['data']) => {
+  return await db.subscription.update({
+    where: { userId },
+    data: data
+  });
+});
