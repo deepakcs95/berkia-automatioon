@@ -69,6 +69,7 @@ export type  UserWithSubscriptionPlan = Awaited<ReturnType<typeof getUserByIdWit
 
 
 export const updateUsageOfSubscription = cache(async (userId: string, data:Prisma.SubscriptionUpdateManyArgs['data']) => {
+  console.log('Updating usage of subscription');
   return await db.subscription.update({
     where: { userId },
     data: data
