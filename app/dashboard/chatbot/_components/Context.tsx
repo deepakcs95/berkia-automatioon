@@ -98,7 +98,11 @@ export function ChatbotProvider({
         console.error("Error creating chatbot:", error);
         toast.error("Error creating chatbot");
       }
+<<<<<<<<< Temporary merge branch 1
+  }, []);
+=========
   }, [optimisticAccounts]);
+>>>>>>>>> Temporary merge branch 2
 
   const handleCancel = useCallback(() => {}, []);
 
