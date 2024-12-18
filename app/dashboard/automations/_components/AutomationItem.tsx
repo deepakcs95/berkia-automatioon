@@ -36,7 +36,9 @@ interface AutomationItemProps {
   automation: AutomationsType;
 }
 
+// automationItem
 const AutomationItem = memo(({ automation }: AutomationItemProps) => {
+
   const { isPending ,pendingAutomations} = useAutomation();
 
   const commentActionIndex = automation.actions.findIndex(
