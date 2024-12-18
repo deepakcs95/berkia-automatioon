@@ -2,7 +2,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useAutomation } from '@/hooks/useAutomation';
 
 import   { memo } from 'react'
-import AutomationForm from './AutomationFrom';
+import dynamic from 'next/dynamic'
+import FormSkeleton from '@/components/skeleton/FormSkeleton';
+const AutomationForm = dynamic(() => import('./AutomationFrom'), { ssr: false ,loading: ()=><FormSkeleton/>})  
 
  
  const AutomationDialog = memo(()=> {

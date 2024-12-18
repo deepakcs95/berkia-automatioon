@@ -31,10 +31,9 @@ interface PostSelectorProps {
   selectedPosts?: string[];
 }
 
-export function PostSelector({ field, postaccountId, selectedPosts }: PostSelectorProps) {
+export default function PostSelector({ field, postaccountId, selectedPosts }: PostSelectorProps) {
   const [open, setOpen] = React.useState(false)
-  const containerRef = React.useRef<HTMLDivElement>(null)
-
+ 
 
  
 

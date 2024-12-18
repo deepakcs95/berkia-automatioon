@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { AutomationFormSection } from "./ui/AutomationFormSection";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Textarea } from "@/components/ui/textarea";
-import { PostSelector } from "./PostSelector";
+import  PostSelector from "./PostSelector";
 import {
   AutomationSchema,
   AutomationSchemaType,
