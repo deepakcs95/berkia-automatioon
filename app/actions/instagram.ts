@@ -38,8 +38,10 @@ export async function connectInstagramAccount(code: string) {
 
   try {
     const token = await getInstagramToken(code);
+
+
     const longLivedToken = await getLongLivedToken(token.access_token);
-    const user = await getInstagramUser(longLivedToken.access_token);
+    const user = await getInstagramUser(longLivedToken.access_token || token.access_token);
     const account = await saveInstagramAccount(
       id ,
       user,
