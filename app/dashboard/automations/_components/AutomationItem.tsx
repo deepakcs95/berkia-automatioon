@@ -86,7 +86,7 @@ const AutomationItem = memo(({ automation }: AutomationItemProps) => {
                 )}
               </div>
             </div>
-            {!isPending && pendingAutomations.has(automation.id) && <AutomationActions automation={automation} />}
+            {!isPending && !pendingAutomations.has(automation.id) && <AutomationActions automation={automation} />}
           </div>
 
           <div className=" flex gap-4 mx-auto flex-col items-start lg:flex-row lg:justify-around lg:mx-0">
