@@ -43,7 +43,7 @@ export async function connectInstagramAccount(code: string) {
     const account = await saveInstagramAccount(
       id ,
       user,
-      longLivedToken.access_token
+      longLivedToken.access_token || token.access_token
     );
 
     if (account) {
