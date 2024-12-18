@@ -18,7 +18,6 @@ export default function ChatBotPage({ accounts }: Props) {
   return (
     <>
     <ChatbotProvider initialAccounts={accounts}>
- 
       <AddHeader  />
       <ChatBotList     />
     </ChatbotProvider>
