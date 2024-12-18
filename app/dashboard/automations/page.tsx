@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import {   getAllSocialAccountAndAutomations } from "@/app/actions/automations";
 import { SocialAccountArrayType  } from "@/lib/db/automations";
-import AutomationsPage from "./_components/AutomationsPage";
+import AutomationsPage from "./_components/AutomationPage";
 import MessageCard from "./_components/ui/NoAccountCard";
 import AutomationSkeleton from "@/components/skeleton/AutomationSkeleton";
  

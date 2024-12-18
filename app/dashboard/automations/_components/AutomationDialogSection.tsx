@@ -1,16 +1,16 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { useAutomation } from '@/hooks/useAutomation';
 
-import React from 'react'
+import   { memo } from 'react'
+import AutomationForm from './AutomationFrom';
 
-interface DeleteDialogProps {
-    openDialog: boolean;
-    setOpenDialog: React.Dispatch<React.SetStateAction<boolean>>;
-    isEditing: boolean;
-    children: React.ReactNode;
-}
- const AutomationDialog = React.memo(function AutomationDialog({children,openDialog,setOpenDialog,isEditing}:DeleteDialogProps) {
+ 
+ const AutomationDialog = memo(()=> {
+
+const {isEditing,openForm,setOpenForm}= useAutomation()
+
   return (
-    <Dialog  open={openDialog} onOpenChange={(open) => setOpenDialog(open)}>
+    <Dialog  open={openForm} onOpenChange={setOpenForm}>
     <DialogContent className="max-w-[95vw] sm:max-w-xl max-h-[90vh] overflow-y-auto mx-auto">
       <DialogHeader>
         <DialogTitle>{isEditing ? "Edit Automation" : "Create Automation"}</DialogTitle>
@@ -19,10 +19,11 @@ interface DeleteDialogProps {
         </DialogDescription>
       </DialogHeader>
       
-     {children}
+      <AutomationForm submitText={isEditing ? "Save Changes" : "Create Automation"}/>
     </DialogContent>
   </Dialog>
   )
 })
 
+AutomationDialog.displayName = "AutomationDialog"
 export default AutomationDialog
