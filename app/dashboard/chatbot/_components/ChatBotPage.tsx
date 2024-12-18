@@ -5,7 +5,7 @@
  
    import { AddHeader } from "./AddHeader";
    import { ChatBotList } from "./ChatBotList";
-import { ChatbotProvider } from "./Context";
+import { ChatbotProvider } from "../../../../hooks/useChatBot";
 
 interface Props {
    accounts: InstagramAccountItem[];

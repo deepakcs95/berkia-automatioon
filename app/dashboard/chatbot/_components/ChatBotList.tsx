@@ -3,7 +3,7 @@ import { ChatBotItem } from './ChatBotItem';
 import { AccountList } from '@/components/global/AccountList';
 import { InstagramAccountItem } from '@/lib/db';
 import ChatbotForm  from './ChatbotForm';
-import { useChatbot } from './Context';
+import { useChatbot } from '../../../../hooks/useChatBot';
 
  
 

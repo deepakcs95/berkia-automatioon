@@ -2,7 +2,7 @@
 import { memo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Check, Pencil, Trash2, X } from "lucide-react";
-import { useChatbot } from './Context';
+import { useChatbot } from '../../../../hooks/useChatBot';
 import { AlertDialogCancel, AlertDialogFooter,AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger, AlertDialog } from '@/components/ui/alert-dialog';
 
 interface AccountActions {

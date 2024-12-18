@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { PlusCircle } from "lucide-react";
 import { memo, useMemo, useState } from "react";
-import { useChatbot } from "./Context";
+import { useChatbot } from "../../../../hooks/useChatBot";
 import ChatbotForm from "./ChatbotForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";

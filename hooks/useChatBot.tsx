@@ -16,9 +16,10 @@ import { toast } from "sonner";
 interface ChatbotContextType {
   accounts: InstagramAccountItem[];
   handleEdit: (data: ChatbotFormData) => void;
-  handleCancel: () => void;
-  handleDelete: (id: string) => void;
+   handleDelete: (id: string) => void;
   handleCreate: (data: ChatbotFormData) => void;
+  accountId: string;
+  isPending: boolean
 }
 
 export const ChatbotContext = createContext<ChatbotContextType | undefined>(
@@ -32,6 +33,8 @@ export function ChatbotProvider({
   children: ReactNode;
   initialAccounts: InstagramAccountItem[];
 }) {
+
+  const [accountId, setAccountId] = useState("");
   const [isPending, startTransition] = useTransition();
 
   const [optimisticAccounts, setOptimisticAccounts] =
@@ -39,6 +42,7 @@ export function ChatbotProvider({
 
   const handleEdit = useCallback(async(data: ChatbotFormData) => {
     startTransition(() => {
+      setAccountId(data.socialAccountId);
       const index = optimisticAccounts.findIndex(
         (account) => account.accountId === data.socialAccountId
       );
@@ -73,6 +77,7 @@ export function ChatbotProvider({
 
   const handleCreate = useCallback(async (data: ChatbotFormData) => {
     startTransition(async () => {
+      setAccountId(data.socialAccountId);
       const index = optimisticAccounts.findIndex(
         (account) => account.accountId === data.socialAccountId
       );
@@ -100,10 +105,10 @@ export function ChatbotProvider({
       }
    }, []);
  
-  const handleCancel = useCallback(() => {}, []);
-
+ 
   const handleDelete = useCallback( async (socialAccountId: string) => {
     startTransition(  ( ) => {
+      setAccountId(socialAccountId);
       setOptimisticAccounts((prev) => {
         const newAccounts = [...prev];
         const index = newAccounts.findIndex(account => account.accountId === socialAccountId);
@@ -140,9 +145,10 @@ try {
       value={{
         accounts: optimisticAccounts,
         handleEdit,
-        handleCancel,
-        handleDelete,
+         handleDelete,
         handleCreate,
+        accountId,
+        isPending
       }}
     >
       {children}

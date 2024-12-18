@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useChatbot } from "./Context";
+import { useChatbot } from "../../../../hooks/useChatBot";
 import AccountSelect from "@/components/global/AccountSelect";
  import { ChatbotFormData } from "@/lib/validator/chatbot";
 

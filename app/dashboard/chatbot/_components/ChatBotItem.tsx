@@ -5,8 +5,9 @@ import { AccountActions } from "./AccountActions";
 import  ChatbotForm from "./ChatbotForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useChatbot } from "./Context";
+import { useChatbot } from "../../../../hooks/useChatBot";
 import { ChatbotFormData, chatbotFormSchema } from "@/lib/validator/chatbot";
+import { cn } from "@/lib/utils/utils";
 
 interface Props {
   id: string;
@@ -19,7 +20,7 @@ export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
   const submitRef = React.useRef<HTMLButtonElement>(null);
   
   
-  const { accounts,handleEdit } = useChatbot();
+  const { accounts,handleEdit,accountId,isPending } = useChatbot();
 
   const chatBot = useMemo(()=>accounts[accountIndex]?.chatbot, [accounts, accountIndex]);
   
@@ -51,7 +52,7 @@ export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
 
  
   return  chatBot && (
-    <Card key={id} className="group">
+    <Card key={id} className={cn("group", { "animate-pulse": isPending && accountId === chatBot.socialAccountId })}>
       <CardContent className="pt-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -62,12 +63,12 @@ export const ChatBotItem = memo(({ id, accountIndex }: Props) => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <AccountActions
+           { !isPending   && <AccountActions
               id={chatBot.socialAccountId}
               isEditing={isEditing}
               setIsEditing={setIsEditing}
               handleSubmitClick={handleSubmitClick}
-            />
+            />}
           </div>
         </div>
         {isEditing && (
