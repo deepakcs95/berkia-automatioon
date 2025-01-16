@@ -6,13 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint" 
-
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "3.9.1/zod",
     "@neondatabase/serverless": "^0.10.4",
-    "@prisma/client": "^6.0.1",
+    "@paypal/react-paypal-js": "^8.7.0",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-aspect-ratio": "^1.1.0",
@@ -42,6 +41,7 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "@tanstack/react-query": "^5.62.3",
     "@tanstack/react-query-devtools": "^5.62.3",
+     "buffer-crc32": "^1.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.0",
@@ -69,6 +69,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@prisma/client": "^6.0.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

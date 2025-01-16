@@ -1,10 +1,22 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, CreditCard, Sparkles, Star, Zap } from "lucide-react";
 import { cn } from "@/lib/utils/utils";
+import { getAllPlans, getCurrentPlan } from "@/lib/db/billing";
+import { getUser } from "@/app/actions/user";
+import { Suspense } from "react";
+import Client from "./client";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Sub } from "@radix-ui/react-dropdown-menu";
+import SubscribeButton from "./SubscribeButton";
 
 interface PricingTier {
   name: string;
@@ -19,8 +31,9 @@ interface PricingTier {
 const pricingTiers: PricingTier[] = [
   {
     name: "Starter",
-    price: "$9",
-    description: "Perfect for individuals getting started with Instagram automation",
+    price: "$0",
+    description:
+      "Perfect for individuals getting started with Instagram automation",
     maxAccounts: 1,
     features: [
       "1 Instagram Account",
@@ -68,28 +81,31 @@ const pricingTiers: PricingTier[] = [
   },
 ];
 
-export default   function BillingPage() {
-
+export default async function BillingPage() {
+  const plans = await getAllPlans();
+ 
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className= " mb-7  ">
-        <h2 className="text-3xl font-bold tracking-tight">Pricing and Billing</h2>
+    <div className="p-6     mx-auto">
+      <div className=" mb-7  ">
+        <h2 className="text-3xl font-bold tracking-tight">
+          Pricing and Billing
+        </h2>
         <p className="text-muted-foreground">
           Choose the plan that works best for you
         </p>
       </div>
-
-      <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
-        {pricingTiers.map((tier) => (
+ 
+      <div className="mx-auto flex flex-wrap justify-center gap-4       ">
+        {plans.map((plan) => (
           <Card
-            key={tier.name}
+            key={plan.name}
             className={cn(
-              "relative flex flex-col justify-between",
-              tier.highlighted && "border-primary shadow-lg"
+              "relative flex flex-col justify-between  max-w-[350px]",
+               plan.name === "PREMIUM" && "border-primary shadow-lg"
             )}
           >
-            {tier.highlighted && (
+            {plan.name === "PREMIUM" && (
               <div className="absolute -top-4 left-0 right-0 flex justify-center">
                 <Badge className="bg-primary hover:bg-primary">
                   <Star className="mr-1 h-3 w-3" /> Most Popular
@@ -98,28 +114,29 @@ export default   function BillingPage() {
             )}
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                {tier.name}
+                {plan.name}
                 <span className="text-2xl font-bold">
-                  {tier.price}
+                  {plan.price}
                   <span className="text-sm font-normal text-muted-foreground">
                     /mo
                   </span>
                 </span>
               </CardTitle>
-              <CardDescription>{tier.description}</CardDescription>
+              <CardDescription>{plan.description}</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="mx-auto">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-primary">
-                  {tier.name === "Starter" && <Sparkles className="h-5 w-5" />}
-                  {tier.name === "Pro" && <Zap className="h-5 w-5" />}
-                  {tier.name === "Business" && <CreditCard className="h-5 w-5" />}
+                  {plan.name === "FREE" && <Sparkles className="h-5 w-5" />}
+                  {plan.name === "PREMIUM" && <Zap className="h-5 w-5" />}
+                  {plan.name === "PRO" && <CreditCard className="h-5 w-5" />}
                   <span className="font-medium">
-                    Up to {tier.maxAccounts} Instagram {tier.maxAccounts === 1 ? "Account" : "Accounts"}
+                    Up to {plan.maxAccounts} Instagram{" "}
+                    {plan.maxAccounts === 1 ? "Account" : "Accounts"}
                   </span>
                 </div>
                 <ul className="space-y-2.5">
-                  {tier.features.map((feature, index) => (
+                  {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <Check className="h-4 w-4 text-primary" />
                       <span className="text-sm">{feature}</span>
@@ -128,15 +145,10 @@ export default   function BillingPage() {
                 </ul>
               </div>
             </CardContent>
-            <CardFooter className="mt-auto">
-              <Button
-                className={cn(
-                  "w-full  mt-auto",
-                  tier.highlighted ? "bg-primary" : "bg-secondary"
-                )}
-              >
-                {tier.buttonText}
-              </Button>
+            <CardFooter className="mt-auto mx-auto">
+              <Suspense fallback={<Skeleton className="h-10 w-full animate-fade-in" />}>
+                <SubscribeButton plan={plan} />
+              </Suspense>
             </CardFooter>
           </Card>
         ))}
@@ -195,37 +207,52 @@ export default   function BillingPage() {
         </div>
 
         <div>
-          <h3 className="text-xl font-semibold mb-4">Frequently Asked Questions</h3>
+          <h3 className="text-xl font-semibold mb-4">
+            Frequently Asked Questions
+          </h3>
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Can I change plans later?</CardTitle>
+                <CardTitle className="text-base">
+                  Can I change plans later?
+                </CardTitle>
                 <CardDescription>
-                  Yes, you can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle.
+                  Yes, you can upgrade or downgrade your plan at any time.
+                  Changes will be reflected in your next billing cycle.
                 </CardDescription>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">What payment methods do you accept?</CardTitle>
+                <CardTitle className="text-base">
+                  What payment methods do you accept?
+                </CardTitle>
                 <CardDescription>
-                  We accept all major credit cards (Visa, Mastercard, American Express) and PayPal.
+                  We accept all major credit cards (Visa, Mastercard, American
+                  Express) and PayPal.
                 </CardDescription>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Is there a free trial?</CardTitle>
+                <CardTitle className="text-base">
+                  Is there a free trial?
+                </CardTitle>
                 <CardDescription>
-                  Yes, all plans come with a 14-day free trial. No credit card required to start.
+                  Yes, all plans come with a 14-day free trial. No credit card
+                  required to start.
                 </CardDescription>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">What happens if I exceed my account limit?</CardTitle>
+                <CardTitle className="text-base">
+                  What happens if I exceed my account limit?
+                </CardTitle>
                 <CardDescription>
-                  You&lsquo;ll need to upgrade to a higher plan to add more Instagram accounts. We&lsquo;ll notify you when you&lsquo;re close to your limit.
+                  You&lsquo;ll need to upgrade to a higher plan to add more
+                  Instagram accounts. We&lsquo;ll notify you when you&lsquo;re
+                  close to your limit.
                 </CardDescription>
               </CardHeader>
             </Card>

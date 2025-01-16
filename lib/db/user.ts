@@ -50,7 +50,18 @@ export const findSubscriptionPlan = cache(async (plan: SubscriptionPlanType) => 
 export const getUserByIdWithSubscription = cache(async (id: string) => {
   return await db.user.findUnique({ where: { id },include: { subscription: {
     include: {
-      plan: true
+      plan: {
+        select: {
+          name: true,
+          id:true,
+          
+          maxAccounts: true,
+          maxChatBots: true,
+          maxComments: true,
+          maxMessages: true,
+          creditLimit: true,
+        }
+      }
     }
   } } });
 });

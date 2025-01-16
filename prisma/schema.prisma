@@ -92,7 +92,7 @@ model Plan {
   maxComments    Int
   maxMessages    Int
   maxChatBots    Int
-  features       Json
+  features       String[]
   duration       Int
   createdAt      DateTime             @default(now())
   updatedAt      DateTime             @updatedAt
@@ -121,6 +121,16 @@ model Subscription {
 
   @@index([userId])
   @@index([planId])
+}
+
+model PayPalCertificate {
+  id        String   @id @default(cuid())
+  certUrl   String   @unique
+  certPem   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([certUrl])
 }
 
 enum SocialType {

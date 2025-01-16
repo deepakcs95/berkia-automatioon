@@ -3,60 +3,71 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-
+  await prisma.subscription.deleteMany({})
   await prisma.plan.deleteMany({})
   const subscriptionPlans = await prisma.plan.createMany({
     data: [
       {
         name: 'FREE',
         price: 0,
-        description: 'Free plan',
+        description: "Perfect for individuals getting started with Instagram automation",
         maxAccounts: 1,
         maxChatBots: 1,
         maxComments: 5,
         maxMessages: 5,
         maxAutomations: 5,
-        features: {
-          1: 'it has 1 account',
-          2: 'it has 5 comments',
-          3: 'it has 5 messages',
-          4: 'it has 5 automations',
-        },
         creditLimit: 50,
+        features: [
+          "1 Instagram Account",
+          "Basic Chatbot Responses",
+          "5 Automation Rules",
+          "24-hour Response Time",
+          "Community Support",
+        ],
+        
         duration: 365 // days
        },
        {
         name: 'PREMIUM',
-        price: 29.99,
-        description: 'PREMIUM plan',
+        price: 9.99,
+        description: "Ideal for growing businesses and content creators",
         maxAccounts: 3,
         maxComments: 50,
         maxMessages: 50,
         maxChatBots: 3,
         maxAutomations: 50,
-        features: {
-          1: 'it has 3 accounts',
-          2: 'it has 50 comments',
-          3: 'it has 50 messages',
-          4: 'it has 50 automations',
-        },
+        features: [
+          "3 Instagram Accounts",
+          "Advanced Chatbot with Context",
+          "15 Automation Rules",
+          "1-hour Response Time",
+          "Priority Support",
+          "Analytics Dashboard",
+          "Custom Response Templates",
+        ],
         creditLimit: 100,
         duration: 365 // days
        },
        {
         name: 'PRO',
-        price: 99.99,
-        description: 'Professional plan',
+        price: 29.99,
+        description: "For businesses requiring advanced automation and analytics",
         maxAccounts: 5,
         maxChatBots: 5,
         maxComments: 100,
         maxMessages: 100,
         maxAutomations: 100,
-        features: {
-          1: 'it has 5 accounts',
-          2: 'it has 100 comments',
-          3: 'it has 100 messages',
-        },
+        features: [
+          "10 Instagram Accounts",
+          "AI-Powered Chatbot",
+          "Unlimited Automation Rules",
+          "Instant Response Time",
+          "24/7 Premium Support",
+          "Advanced Analytics",
+          "Custom Integration",
+          "Dedicated Account Manager",
+          "API Access",
+        ],
         creditLimit: 200,
         duration: 365 // days
        },
