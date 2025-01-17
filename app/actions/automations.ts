@@ -28,9 +28,9 @@ export async function createNewAutomation(automation: AutomationsType) {
 
     const user = await getUser();
 
-    if (!user || !user.subscription || user.subscription.plan) return { status: 404, message: "User not found" };
+    if (!user || !user.subscription || !user.subscription.plan) return { status: 404, message: "User not found" };
 
-    const { isValid, message } = validateSubscriptionForUser( {subscription: user.subscription, plan: user.subscription.plan, action: "createAutomation" });
+    const { isValid, message } = validateSubscriptionForUser({subscription: user.subscription, action: "createAutomation", requiredCredits: 1 });
     
     if (!isValid) {
       return { status: 400, message };

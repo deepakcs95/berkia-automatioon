@@ -54,8 +54,8 @@ export const getUserByIdWithSubscription = cache(async (id: string) => {
         select: {
           name: true,
           id:true,
-          
           maxAccounts: true,
+          maxAutomations: true,
           maxChatBots: true,
           maxComments: true,
           maxMessages: true,
@@ -67,6 +67,8 @@ export const getUserByIdWithSubscription = cache(async (id: string) => {
 });
 
 export type  UserWithSubscription = Awaited<ReturnType<typeof getUserByIdWithSubscription>>
+export type SubscriptionWithPlan = NonNullable<UserWithSubscription>['subscription'];
+
 
 export const findSubscriptionPlanByUserId = cache(async (userId: string) => {
   return await db.user.findUnique({ where: { id: userId },include: { subscription: {

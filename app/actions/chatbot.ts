@@ -21,11 +21,11 @@ export async function createNewChatBot(chatBotFromData: unknown) {
     const data = validatedData.data;
 
 
-    if (!user || !user.subscription || user.subscription.plan) return { status: 404, message: "User not found" };
+    if (!user || !user.subscription || !user.subscription.plan) return { status: 404, message: "User not found" };
 
     const { isValid, message } = validateSubscriptionForUser({
       subscription: user.subscription,
-      plan: user.subscription.plan,
+       
       action: "createChatbot",
      });
 
