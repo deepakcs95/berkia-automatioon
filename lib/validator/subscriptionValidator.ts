@@ -2,10 +2,18 @@ import { ActionType, Plan, Subscription, SubscriptionStatus } from "@prisma/clie
 
 export type userActions = "createAccount" | "createAutomation" | "createChatbot";
 // Define the validation function
-export function validateSubscriptionForUser(
-  subscription: Subscription & { plan: Plan }, 
+type ValidationFunction = {
+  subscription: Subscription,
+  plan: Plan,
   action: ActionType | userActions,
-  requiredCredits: number = 1  
+  requiredCredits?: number
+}
+
+export function validateSubscriptionForUser(
+  {subscription , 
+  plan ,
+  action ,
+  requiredCredits = 1  }: ValidationFunction
 ): { isValid: boolean; message: string } {
 
   
@@ -21,7 +29,7 @@ export function validateSubscriptionForUser(
 
   switch(action) {
     case "createAutomation":
-      if(subscription.plan.maxAutomations < subscription.automationsUsed + 1) {
+      if(plan.maxAutomations < subscription.automationsUsed + 1) {
         return {
           isValid: false,
           message: "You have reached your account limit for this subscription.",
@@ -29,7 +37,7 @@ export function validateSubscriptionForUser(
       }
       break;
     case "createAccount":
-      if(subscription.plan.maxAccounts < subscription.accountsUsed + 1) {
+    if(plan.maxAccounts < subscription.accountsUsed + 1) {
         return {
           isValid: false,
           message: "You have reached your account limit for this subscription.",
@@ -37,7 +45,7 @@ export function validateSubscriptionForUser(
       }
       break;  
     case "createChatbot":
-      if(subscription.plan.maxChatBots < subscription.chatBotsUsed + 1) {
+      if(plan.maxChatBots < subscription.chatBotsUsed + 1) {
         return {
           isValid: false,
           message: "You have reached your chatbot limit for this subscription.",
@@ -46,7 +54,7 @@ export function validateSubscriptionForUser(
       break;  
 
     case "COMMENT_REPLY": {
-      if (subscription.commentsUsed >= subscription.plan.maxComments) {
+      if (subscription.commentsUsed >=  plan.maxComments) {
         return {
           isValid: false,
           message: "You have reached your comment limit for this subscription.",
@@ -55,7 +63,7 @@ export function validateSubscriptionForUser(
       break;
     }
     case "MESSAGE_REPLY": {
-      if (subscription.messagesUsed >= subscription.plan.maxMessages) {
+      if (subscription.messagesUsed >=  plan.maxMessages) {
         return {
           isValid: false,
           message: "You have reached your message limit for this subscription.",
